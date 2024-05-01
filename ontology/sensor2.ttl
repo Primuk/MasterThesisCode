@@ -1,0 +1,162 @@
+@prefix : <http://example.org/ssn_ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ssn: <http://purl.oclc.org/NET/ssnx/ssn#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://example.org/ssn_ontology> .
+
+<http://example.org/ssn_ontology> rdf:type owl:Ontology .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasResult
+ssn:hasResult rdf:type owl:ObjectProperty ;
+              rdfs:domain ssn:Observation ;
+              rdfs:range ssn:Result ;
+              rdfs:comment "Relation linking an Observation and a Result."@en .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasSensor
+ssn:hasSensor rdf:type owl:ObjectProperty ;
+              rdfs:domain ssn:Observation ;
+              rdfs:range ssn:Sensor ;
+              rdfs:comment "Each observation belongs to a sensor."@en .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://example.org/ssn_ontology#acceleration
+:acceleration rdf:type owl:DatatypeProperty .
+
+
+###  http://example.org/ssn_ontology#position
+:position rdf:type owl:DatatypeProperty .
+
+
+###  http://example.org/ssn_ontology#velocity
+:velocity rdf:type owl:DatatypeProperty .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasAccelerationX
+ssn:hasAccelerationX rdf:type owl:DatatypeProperty ;
+                     rdfs:subPropertyOf :acceleration ;
+                     rdfs:domain ssn:Observation ;
+                     rdfs:range xsd:float ;
+                     rdfs:comment "An observation has an X-axis acceleration value."@en .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasAccelerationY
+ssn:hasAccelerationY rdf:type owl:DatatypeProperty ;
+                     rdfs:subPropertyOf :acceleration ;
+                     rdfs:domain ssn:Observation ;
+                     rdfs:range xsd:float ;
+                     rdfs:comment "An observation has a Y-axis acceleration value."@en .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasCompletionStatus
+ssn:hasCompletionStatus rdf:type owl:DatatypeProperty ;
+                        rdfs:domain ssn:Result ;
+                        rdfs:range xsd:boolean ;
+                        rdfs:comment "Indicates whether the task was successfully completed."@en .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasDetails
+ssn:hasDetails rdf:type owl:DatatypeProperty ;
+               rdfs:domain ssn:Observation ;
+               rdfs:range xsd:string ;
+               rdfs:comment "An observation has additional details."@en .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasPositionX
+ssn:hasPositionX rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :position ;
+                 rdfs:domain ssn:Observation ;
+                 rdfs:range xsd:float ;
+                 rdfs:comment "An observation has an X-axis position value."@en .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasPositionY
+ssn:hasPositionY rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :position ;
+                 rdfs:domain ssn:Observation ;
+                 rdfs:range xsd:float ;
+                 rdfs:comment "An observation has a Y-axis position value."@en .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasPressure
+ssn:hasPressure rdf:type owl:DatatypeProperty ;
+                rdfs:domain ssn:Observation ;
+                rdfs:range xsd:float ;
+                rdfs:comment "An observation has a pressure value."@en .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasTemperature
+ssn:hasTemperature rdf:type owl:DatatypeProperty ;
+                   rdfs:domain ssn:Observation ;
+                   rdfs:range xsd:float ;
+                   rdfs:comment "An observation has a temperature value."@en .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasVelocityX
+ssn:hasVelocityX rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :velocity ;
+                 rdfs:domain ssn:Observation ;
+                 rdfs:range xsd:float ;
+                 rdfs:comment "An observation has an X-axis velocity value."@en .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#hasVelocityY
+ssn:hasVelocityY rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :velocity ;
+                 rdfs:domain ssn:Observation ;
+                 rdfs:range xsd:float ;
+                 rdfs:comment "An observation has a Y-axis velocity value."@en .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#resultTime
+ssn:resultTime rdf:type owl:DatatypeProperty ;
+               rdfs:domain ssn:Result ;
+               rdfs:range xsd:dateTime ;
+               rdfs:comment "The result time is the instant of time when the Observation was completed."@en .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://purl.oclc.org/NET/ssnx/ssn#Observation
+ssn:Observation rdf:type owl:Class .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#Result
+ssn:Result rdf:type owl:Class .
+
+
+###  http://purl.oclc.org/NET/ssnx/ssn#Sensor
+ssn:Sensor rdf:type owl:Class ;
+           rdfs:comment "This class includes 3 specific sensors with observations"@en .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://example.org/ssn_ontology#sensor1
+:sensor1 rdf:type owl:NamedIndividual .
+
+
+###  http://example.org/ssn_ontology#sensor2
+:sensor2 rdf:type owl:NamedIndividual .
+
+
+###  http://example.org/ssn_ontology#sensor3
+:sensor3 rdf:type owl:NamedIndividual .
+
+
+###  Generated by the OWL API (version 4.5.26.2023-07-17T20:34:13Z) https://github.com/owlcs/owlapi

@@ -1,0 +1,77 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix ssn:  <http://www.w3.org/ns/ssn/> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@base <http://example.org/data/> .
+
+# Define the robot arm sensor
+<robotArmSensor> rdf:type sosa:Sensor ;
+  sosa:observes <vehicleDiagnostics/position_x> , <vehicleDiagnostics/position_y> ,
+                <vehicleDiagnostics/velocity_x> , <vehicleDiagnostics/velocity_y> ,
+                <vehicleDiagnostics/acceleration_x> , <vehicleDiagnostics/acceleration_y> ,
+                <vehicleDiagnostics/pressure> , <vehicleDiagnostics/temperature> ,
+                <vehicleDiagnostics/more_details> ;
+  sosa:madeObservation <observation/1> , <observation/2> , <observation/3> , <observation/4> ,
+                        <observation/5> , <observation/6> , <observation/7> , <observation/8> ,
+                        <observation/9> .
+
+
+# Define observations made by the robot arm sensor
+<observation/1> rdf:type sosa:Observation ;
+  sosa:observedProperty <vehicleDiagnostics/position_x> ;
+  sosa:madeBySensor <robotArmSensor> ;
+  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
+  sosa:hasSimpleResult "10"^^xsd:integer .
+
+<observation/2> rdf:type sosa:Observation ;
+  sosa:observedProperty <vehicleDiagnostics/position_y> ;
+  sosa:madeBySensor <robotArmSensor> ;
+  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
+  sosa:hasSimpleResult "15"^^xsd:integer .
+
+# Define observations for velocity properties
+<observation/3> rdf:type sosa:Observation ;
+  sosa:observedProperty <vehicleDiagnostics/velocity_x> ;
+  sosa:madeBySensor <robotArmSensor> ;
+  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
+  sosa:hasSimpleResult "2"^^xsd:integer .
+
+<observation/4> rdf:type sosa:Observation ;
+  sosa:observedProperty <vehicleDiagnostics/velocity_y> ;
+  sosa:madeBySensor <robotArmSensor> ;
+  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
+  sosa:hasSimpleResult "3"^^xsd:integer .
+
+# Define observations for acceleration properties
+<observation/5> rdf:type sosa:Observation ;
+  sosa:observedProperty <vehicleDiagnostics/acceleration_x> ;
+  sosa:madeBySensor <robotArmSensor> ;
+  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
+  sosa:hasSimpleResult "0.5"^^xsd:decimal .
+
+<observation/6> rdf:type sosa:Observation ;
+  sosa:observedProperty <vehicleDiagnostics/acceleration_y> ;
+  sosa:madeBySensor <robotArmSensor> ;
+  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
+  sosa:hasSimpleResult "-0.2"^^xsd:decimal .
+
+# Define observations for pressure and temperature properties
+<observation/7> rdf:type sosa:Observation ;
+  sosa:observedProperty <vehicleDiagnostics/pressure> ;
+  sosa:madeBySensor <robotArmSensor> ;
+  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
+  sosa:hasSimpleResult "100"^^xsd:integer .
+
+<observation/8> rdf:type sosa:Observation ;
+  sosa:observedProperty <vehicleDiagnostics/temperature> ;
+  sosa:madeBySensor <robotArmSensor> ;
+  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
+  sosa:hasSimpleResult "25"^^xsd:decimal .
+
+# Define observations for additional details
+<observation/9> rdf:type sosa:Observation ;
+  sosa:observedProperty <vehicleDiagnostics/more_details> ;
+  sosa:madeBySensor <robotArmSensor> ;
+  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
+  sosa:hasSimpleResult "Any additional details you want to include"^^xsd:string .
+
