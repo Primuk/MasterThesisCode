@@ -1,8 +1,8 @@
 from pyspark.context import SparkContext
 from pyspark.sql.session import SparkSession
-neo4j_url = "bolt://172.25.0.15:7687" # put your neo4j url here
+neo4j_url = "bolt://host.docker.internal:7687"
 neo4j_user = "neo4j"
-neo4j_password = "root1234"
+neo4j_password = "12345678"#"root1234"
 # Create SparkContext and SparkSession
 #sc = SparkContext('local')
 spark = SparkSession.builder \
@@ -18,8 +18,8 @@ spark = SparkSession.builder \
 parquet_df = spark.read.parquet("./test")
 
 # Show the DataFrame
-parquet_df.show()
-parquet_df.printSchema()
+#parquet_df.show()
+#parquet_df.printSchema()
 
 parquet_df_test=parquet_df.select("sensor","temperature")
 parquet_df_test.printSchema()
