@@ -2,9 +2,9 @@
 
 This repository contains a docker-compose.yml file which when started up creates a zookeeper backend, two kafkas, one intended to be used as a producer and one for use as a consumer, and spark available in a container for submitting streaming jobs.
 
-## Educational Purpose
+## Infrastructure
 
-This repository was created to be used as part of the masters program in data science at Drexel University. Docker and docker-compose are being leveraged to reduce the technical burden requird to install all these components manually. Utilizing the docker-compose file in this repo students can understand how these components function together without wasting time setting them all up and hooking them together.
+Docker and docker-compose are being leveraged to reduce the technical burden required to install all these components manually. Utilizing the docker-compose file in this repo students can understand how these components function together without wasting time setting them all up and hooking them together.
 
 ## Detail Summary
 
@@ -23,15 +23,15 @@ The easiest way to understand the setup is by diving into it and interacting wit
 
 ## Running Docker Compose
 
-To run docker compose simply run the following command in the current folder:
+To run docker-compose simply run the following command in the current folder:
 
 ```
 docker-compose up -d
 ```
 
-This will run deattached. It will start all 4 containers.
+This will run detached. It will start all 4 containers.
 
-To view the their status run
+To view their status run
 
 ```
 > docker-compose ps
@@ -69,13 +69,13 @@ The current working directory is mounted in the /app folder inside the spark con
 
 ## Running Sample Code
 
-There are two samples of code included to test and try out publishing data onto a kafka topic and reading from it with spark.
+There are two samples of code included to test and try out publishing data onto a Kafka topic and reading from it with Spark.
 
 ### Publishing Data
 
-Inside of the git repository there is a code sample to add the numbers 1 to 1000 onto a topic 'SAMPLE_TOPIC_NAME'. To view the code open the file create_topic_send_data.py. To run it follow these steps:
+Inside the git repository, there is a code sample to add the numbers 1 to 1000 onto a topic 'SAMPLE_TOPIC_NAME'. To view the code open the file create_topic_send_data.py. To run it follow these steps:
 
-1. Open a shell inside the spark container (assumes the containers are up and running)
+1. Open a shell inside the spark container (assume the containers are up and running)
     ```
     docker-compose exec spark bash
     ```
@@ -94,7 +94,7 @@ Inside of the git repository there is a code sample to add the numbers 1 to 1000
 
 ### Reading Data With Spark SQL
 
-Also included is a code sample to read data from a topic using spark sql. To view the code open the file spark_read_from_topic_and_show.py. Also provided are two jar files that spark needs for spark sql and the kafka client. Because the volume is mounted into the /app folder all those files will be there to use. To run it follow these steps:
+Also included is a code sample to read data from a topic using spark sql. To view the code open the file spark_read_from_topic_and_show.py. Also provided are two jar files that Spark needs for Spark SQL and the Kafka client. Because the volume is mounted into the /app folder all those files will be there to use. To run it follow these steps:
 
 1. Open a shell inside the spark container (assumes the containers are up and running)
     ```
@@ -104,11 +104,11 @@ Also included is a code sample to read data from a topic using spark sql. To vie
     ```
     cd /app
     ```
-1. Submit the python code to sparkSQL along with the jar files:
+1. Submit the Python code to sparkSQL along with the jar files:
     ```
     spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5 --jars kafka-clients-2.2.0.jar --driver-class-path kafka-clients-2.2.0.jar spark_read_from_topic_and_show.py
     ```
-1. Submit the python code to sparkStreaming along with the jar files:
+1. Submit the Python code to spark streaming along with the jar files:
     ```
     spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5 --jars kafka-clients-2.2.0.jar --driver-class-path kafka-clients-2.2.0.jar spark-stream-from-topic.py
     ```
