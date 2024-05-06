@@ -136,14 +136,3 @@ Also included is a code sample to read data from a topic using spark sql. To vie
     --driver-class-path kafka-clients-2.2.0.jar \
     spark-stream-from-topic.py
     ```
-  neo4j:
-    image: neo4j:latest
-    container_name: neo4j
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    environment:
-      NEO4J_AUTH: neo4j/root1234
-    networks:
-      kafkanet:
-        ipv4_address: 172.25.0.15

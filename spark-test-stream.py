@@ -2,9 +2,8 @@ from pyspark.context import SparkContext
 from pyspark.sql.session import SparkSession
 neo4j_url = "bolt://host.docker.internal:7687"
 neo4j_user = "neo4j"
-neo4j_password = "12345678"#"root1234"
-# Create SparkContext and SparkSession
-#sc = SparkContext('local')
+neo4j_password = "12345678"
+
 spark = SparkSession.builder \
     .appName('Data science workflow with Neo4j and Spark') \
     .config('spark.jars.packages', 'org.neo4j:neo4j-connector-apache-spark_2.13:5.3.0_for_spark_3') \
@@ -16,10 +15,6 @@ spark = SparkSession.builder \
 
 # Read Parquet files from a directory
 parquet_df = spark.read.parquet("./test")
-
-# Show the DataFrame
-#parquet_df.show()
-#parquet_df.printSchema()
 
 parquet_df_test=parquet_df.select("sensor","temperature")
 parquet_df_test.printSchema()
