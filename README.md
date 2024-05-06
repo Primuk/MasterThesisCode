@@ -40,7 +40,6 @@ NAME        IMAGE                                COMMAND                  SERVIC
 ----------------------------------------------------------------------------------------------------------------------------------------
 kafka1      wurstmeister/kafka:2.12-2.2.0        "start-kafka.sh"         kafka1      15 minutes ago   Up 3 seconds   8080/tcp, 9092/tcp
 kafka2      wurstmeister/kafka:2.12-2.2.0        "start-kafka.sh"         kafka2      15 minutes ago   Up 3 seconds   8080/tcp, 9092/tcp
-neo4j       neo4j:latest                         "tini -g -- /startup…"   neo4j       15 minutes ago   Up 4 seconds   0.0.0.0:7474->7474/tcp, 7473/tcp, 0.0.0.0:7687->7687/tcp
 spark       gettyimages/spark:2.4.1-hadoop-3.0   "bin/spark-class org…"   spark       15 minutes ago   Up 4 seconds
 zookeeper   zookeeper:3.6.1                      "/docker-entrypoint.…"   zookeeper   15 minutes ago   Up 4 seconds   2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp
 ```
