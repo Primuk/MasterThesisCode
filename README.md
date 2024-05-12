@@ -131,7 +131,7 @@ Also included is a code sample to read data from a topic using spark sql. To vie
 1. Submit the python code to write to neo4j:    
     ```spark-submit \
     --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5,org.neo4j:neo4j-connector-apache-spark_2.13:5.3.0_for_spark_3 \
-    --jars kafka-clients-2.2.0.jar,neo4j-connector-apache-spark_2.13-5.3.0_for_spark_3.jar \
+    --jars kafka-clients-2.2.0.jar,neo4j-connector-apache-spark_2.11-4.1.5_for_spark_2.4.jar \
     --driver-class-path kafka-clients-2.2.0.jar \
     spark-stream-from-topic.py
     ```

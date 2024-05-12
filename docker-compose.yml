@@ -63,6 +63,18 @@ services:
       - NEO4J_USER=neo4j
       - NEO4J_PASSWORD=12345678
 
+  # airflow:
+  #   image: apache/airflow:2.1.0
+  #   container_name: airflow
+  #   environment:
+  #     - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - ./dags:/opt/airflow/dags
+  #   networks:
+  #     kafkanet: 
+  #       ipv4_address: 172.25.0.15
 
 networks:
   kafkanet:
@@ -77,4 +89,3 @@ volumes:
   kafka_zookeeper:
   kafka_kafka1:
   kafka_kafka2:
-

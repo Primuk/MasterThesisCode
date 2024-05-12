@@ -17,10 +17,14 @@ spark = SparkSession.builder \
 parquet_df = spark.read.parquet("./test")
 
 parquet_df_test=parquet_df.select("sensor","temperature")
-parquet_df_test.printSchema()
+#parquet_df_test.printSchema()
+#print(parquet_df)
+
 #test neo4j connection
+'''
 parquet_df_test.write\
  .format('org.neo4j.spark.DataSource')\
  .mode('append')\
  .option('labels', ':sensor')\
  .save()
+ '''
