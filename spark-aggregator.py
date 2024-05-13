@@ -1,6 +1,8 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import window, min, max, col
+from pyspark.sql.functions import window, min, max, col, avg, udf,lag, when,lit
+from pyspark.sql import functions as F
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
+from pyspark.sql.window import Window
 import logging
 
 # Initialize SparkSession
@@ -51,14 +53,18 @@ result_df = streaming_df \
     .agg(min("temperature").alias("min_temperature"), max("temperature").alias("max_temperature"),
          avg("temperature").alias("avg_temperature"))
 
+result_df = result_df.withColumn(
+    "status", 
+    when(50 < col("avg_temperature"), "ALERT").otherwise("NORMAL")
+)
+#Set property of those nodes as status "Normal" or alert in neo4j for those having timestamp in the same window
+#TODO
+
 # Display the result
 query = result_df.writeStream \
     .outputMode("complete") \
     .format("console") \
     .start()
 
-# Wait for a few seconds to see the streaming output
-query.awaitTermination(10)
-
-# Stop the query
+query.awaitTermination()
 query.stop()

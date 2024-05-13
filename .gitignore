@@ -3,3 +3,5 @@
 /test/
 /staging/
 /staging_checkpoint/
+/logs/
+/env/

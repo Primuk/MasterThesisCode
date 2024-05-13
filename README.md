@@ -81,10 +81,16 @@ Inside the git repository, there is a code sample to add the numbers 1 to 1000 o
 1. Cd into the /app directory which has the volume pointing to the same directory as the root of the repository
     ```
     cd /app
+    source env/bin/activate
+    airflow db init
+    airflow webserver -p 8082
+    airflow scheduler
+    export AIRFLOW_HOME =/app
     ```
 1. Pip Install kafka-python
     ```
     pip install kafka-python
+    pip install "apache-airflow==1.10.14" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-1.10.14/constraints-3.5.txt"
     ```
 1. Execute the python code
     ```
@@ -135,3 +141,8 @@ Also included is a code sample to read data from a topic using spark sql. To vie
     --driver-class-path kafka-clients-2.2.0.jar \
     spark-stream-from-topic.py
     ```
+```spark-submit \
+    --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5,org.neo4j:neo4j-connector-apache-spark_2.11:4.1.5_for_spark_2.4 \
+    --jars kafka-clients-2.2.0.jar,neo4j-connector-apache-spark_2.11-4.1.5_for_spark_2.4.jar \
+    --driver-class-path kafka-clients-2.2.0.jar \
+    spark-aggregator.py```
