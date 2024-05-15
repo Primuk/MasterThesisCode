@@ -82,10 +82,15 @@ Inside the git repository, there is a code sample to add the numbers 1 to 1000 o
     ```
     cd /app
     source env/bin/activate
+    export AIRFLOW_HOME=/app
     airflow db init
+    sudo service postgresql start
     airflow webserver -p 8082
+    
+    #new terminal
     airflow scheduler
-    export AIRFLOW_HOME =/app
+    export AIRFLOW__CORE__LOAD_EXAMPLES=False
+    mysql -u root -p
     ```
 1. Pip Install kafka-python
     ```

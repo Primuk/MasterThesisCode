@@ -62,3 +62,9 @@ RUN curl -sL --retry 3 \
 
 WORKDIR $SPARK_HOME
 CMD ["bin/spark-class", "org.apache.spark.deploy.master.Master"]
+
+# echo "deb http://archive.debian.org/debian stretch main" >> /etc/apt/sources.list 
+# echo "deb-src http://archive.debian.org/debian stretch main" >> /etc/apt/sources.list 
+# echo "deb http://archive.debian.org/debian stretch-backports main" >> /etc/apt/sources.list 
+# echo  "deb http://archive.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list 
+# echo  "deb-src http://archive.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list

@@ -8,7 +8,7 @@
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
-import json
+import json,os
 
 def main():
 
@@ -42,7 +42,9 @@ def main():
     df['more_details'] = more_details
 
     df = df.sort_values(by=['timestamp'])
-    df.to_csv('data.csv', index=False)
+    script_dir = os.path.dirname(os.path.realpath(__file__))  # Get the directory of the script
+    output_path = os.path.join(script_dir, 'data.csv')  # Construct the absolute path to data.csv
+    df.to_csv(output_path, index=False)
 
 
 if __name__ == "__main__":

@@ -37,17 +37,17 @@
 
 """
 import numpy as np
-import json
 import csv
 from datetime import datetime, timedelta
+import time,os
 
-def generate_sensor_data(num_samples):
-    data = []
-    current_time = datetime.now()
-    
-    for _ in range(num_samples):
+def generate_sensor_data(interval):
+    script_dir = os.path.dirname(os.path.realpath(__file__))  # Get the directory of the script
+    output_path = os.path.join(script_dir, 'robot_sensor_data1.csv')  # Construct the absolute path to data.csv
+
+    while True:
         sample_data = {
-            'timestamp': current_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'position': {
                 'x': np.random.uniform(-10, 10),
                 'y': np.random.uniform(-10, 10),
@@ -80,20 +80,18 @@ def generate_sensor_data(num_samples):
             'gripper_status': np.random.choice(['open', 'closed']),
             'load': np.random.uniform(0, 100)
         }
-        data.append(sample_data)
-        current_time += timedelta(seconds=1)
-    
-    return data
+
+        with open(output_path, 'a', newline='') as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=sample_data.keys())
+            if csv_file.tell() == 0:
+                writer.writeheader()
+            writer.writerow(sample_data)
+
+        time.sleep(interval)
 
 def main():
-    num_samples = 1000  # Number of samples to generate
-    sensor_data = generate_sensor_data(num_samples)
-
-    # Save data in CSV format
-    with open('data/robot_sensor_data.csv', 'w', newline='') as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=sensor_data[0].keys())
-        writer.writeheader()
-        writer.writerows(sensor_data)
+    interval_seconds = 1  # Interval between samples in seconds
+    generate_sensor_data(interval_seconds)
 
 if __name__ == "__main__":
     main()
