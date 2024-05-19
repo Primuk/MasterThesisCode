@@ -138,8 +138,8 @@ df_parsed.printSchema()
 # Write the parsed data to HDFS
 hdfs_query = df_parsed.writeStream \
     .format("parquet") \
-    .option("path", "./staging") \
-    .option("checkpointLocation", "./staging_checkpoint") \
+    .option("path", "/app/staging") \
+    .option("checkpointLocation", "/app/staging_checkpoint") \
     .start()
 
 # Write the parsed data to Neo4j
@@ -147,7 +147,7 @@ neo4j_query = df_parsed.writeStream \
     .format("org.neo4j.spark.DataSource") \
     .option("save.mode", "ErrorIfExists") \
     .option("labels", "timestamp") \
-    .option("checkpointLocation", "./neo4j_checkpoint") \
+    .option("checkpointLocation", "/app/neo4j_checkpoint") \
     .start()
 
 # Wait for any of the queries to terminate

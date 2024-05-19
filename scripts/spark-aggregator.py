@@ -44,7 +44,7 @@ schema_read = StructType([
 streaming_df = spark.readStream \
     .schema(schema_read) \
     .format("parquet") \
-    .load("./staging")
+    .load("/app/staging")
 
 # Calculate min and max temperatures over a 5-minute window
 result_df = streaming_df \

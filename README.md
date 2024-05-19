@@ -78,16 +78,22 @@ Inside the git repository, there is a code sample to add the numbers 1 to 1000 o
     ```
     docker-compose exec spark bash
     ```
-1. Cd into the /app directory which has the volume pointing to the same directory as the root of the repository
+1. First step: Start PostGreSQL
+    ```
+    sudo service postgresql start
+    ```
+1. Second step: Install all python dependencies
     ```
     cd /app
     source env/bin/activate
     export AIRFLOW_HOME=/app
+    export AIRFLOW__CORE__EXECUTOR=LocalExecutor
     airflow db init
-    sudo service postgresql start
     airflow webserver -p 8082
     
     #new terminal
+    source /app/env/bin/activate
+    cd /app
     airflow scheduler
     export AIRFLOW__CORE__LOAD_EXAMPLES=False
     mysql -u root -p
@@ -137,10 +143,16 @@ Also included is a code sample to read data from a topic using spark sql. To vie
     --jars kafka-clients-2.2.0.jar,neo4j-connector-apache-spark_2.11-4.1.5_for_spark_2.4.jar \
     --driver-class-path kafka-clients-2.2.0.jar \
     spark-to-neo4j.py
-
+    spark-submit \
+    --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5,org.neo4j:neo4j-connector-apache-spark_2.11:4.1.5_for_spark_2.4 \
+    --jars kafka-clients-2.2.0.jar,neo4j-connector-apache-spark_2.11-4.1.5_for_spark_2.4.jar \
+    --driver-class-path kafka-clients-2.2.0.jar \
+    spark-to-neo4j-robo.py
++
     ```
 1. Submit the python code to write to neo4j:    
-    ```spark-submit \
+    ```
+    spark-submit \
     --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5,org.neo4j:neo4j-connector-apache-spark_2.13:5.3.0_for_spark_3 \
     --jars kafka-clients-2.2.0.jar,neo4j-connector-apache-spark_2.11-4.1.5_for_spark_2.4.jar \
     --driver-class-path kafka-clients-2.2.0.jar \

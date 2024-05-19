@@ -32,16 +32,32 @@ deploy_task = BashOperator(
     dag=dag,
     xcom_push=False
 )
+# Define the command to stream spark to neo4j and staging
+spark_to_neo4j_command = 'spark-submit \
+    --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5,org.neo4j:neo4j-connector-apache-spark_2.11:4.1.5_for_spark_2.4 \
+    --jars /app/kafka-clients-2.2.0.jar,/app/neo4j-connector-apache-spark_2.11-4.1.5_for_spark_2.4.jar \
+    --driver-class-path /app/kafka-clients-2.2.0.jar \
+    /app/scripts/spark-to-neo4j-robo.py'
 
-# Define the path to the Kafka producer script
-kafka_producer_command = 'cd /app/scripts && python create_topic_send_robodata.py'
+# Define the task to execute deploy.sh
+ingestion_task = BashOperator(
+    task_id='data_ingestion_for_staging_and_neo4j',
+    bash_command=spark_to_neo4j_command,
+    dag=dag,
+    xcom_push=False
+)
+hdfs_to_neo4j_command =  'spark-submit \
+    --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.5,org.neo4j:neo4j-connector-apache-spark_2.11:4.1.5_for_spark_2.4 \
+    --jars /app/kafka-clients-2.2.0.jar,/app/neo4j-connector-apache-spark_2.11-4.1.5_for_spark_2.4.jar \
+    --driver-class-path /app/kafka-clients-2.2.0.jar \
+    /app/scripts/spark-aggregator.py'
 
-# Define the task to start Kafka producer
-kafka_producer_task = BashOperator(
-    task_id='start_kafka_producer',
-    bash_command=kafka_producer_command,
-    dag=dag
+aggregation_task = BashOperator(
+    task_id='aggregation_task_to_neo4j',
+    bash_command=hdfs_to_neo4j_command,
+    dag=dag,
+    xcom_push=False
 )
 
 # Set task dependencies
-deploy_task >> kafka_producer_task
+deploy_task >> [ingestion_task, aggregation_task]

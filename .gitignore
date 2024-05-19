@@ -5,5 +5,5 @@
 /staging_checkpoint/
 /logs/
 /env/
-/data/
+/data/*.csv
 *.csv
