@@ -14,7 +14,8 @@ neo4j_password = "12345678"
 #sc.setLogLevel("ERROR")
 spark = SparkSession.builder \
     .appName("Read from Kafka and Parse JSON") \
-    .config('spark.jars.packages', 'org.neo4j:neo4j-connector-apache-spark_2.13:5.3.0_for_spark_3') \
+    .config('spark.jars.packages', 'org.neo4j:neo4j-connector-apache-spark_2.11-4.1.5_for_spark_2.4.jar') \
+    .config("spark.jars.repositories", "https://repo1.maven.org/maven2")\
     .config("neo4j.url", neo4j_url) \
     .config("neo4j.authentication.type", "basic") \
     .config("neo4j.authentication.basic.username", neo4j_user) \
@@ -53,6 +54,8 @@ df1 = spark \
     .format("kafka") \
     .option("kafka.bootstrap.servers", "172.25.0.12:9092,172.25.0.13:9092") \
     .option("subscribe", TOPIC_NAME) \
+    .option("startingOffsets", "earliest") \
+    .option("failOnDataLoss", "false") \
     .load()
 
 
@@ -131,9 +134,6 @@ columns_to_typecast = ["load", "velocity", "temperature", "pressure"]
 # Typecast the columns to double
 for col_name in columns_to_typecast:
     df_parsed = df_parsed.withColumn(col_name, df_parsed[col_name].cast(DoubleType()))
-
-# Show the schema
-df_parsed.printSchema()
 
 # Write the parsed data to HDFS
 hdfs_query = df_parsed.writeStream \

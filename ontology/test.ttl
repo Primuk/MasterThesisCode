@@ -1,0 +1,45 @@
+@prefix : <http://www.semanticweb.org/primu/ontologies/2024/4/thesisioe#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.semanticweb.org/primu/ontologies/2024/4/thesisioe#> .
+
+<http://www.semanticweb.org/primu/ontologies/2024/4/thesisioe> rdf:type owl:Ontology .
+
+### Classes
+:Human rdf:type owl:Class .
+:Robot rdf:type owl:Class .
+:Machine rdf:type owl:Class .
+:Sensor rdf:type owl:Class .
+:Task rdf:type owl:Class .
+:Skill rdf:type owl:Class .
+:Environment rdf:type owl:Class .
+:Data rdf:type owl:Class .
+
+### Object Properties
+:hasTask rdf:type owl:ObjectProperty ;
+         rdfs:domain [ rdf:type owl:Class ;
+                       owl:unionOf ( :Human :Robot )
+                     ] ;
+         rdfs:range :Task .
+
+:locatedIn rdf:type owl:ObjectProperty ;
+           rdfs:domain [ rdf:type owl:Class ;
+                         owl:unionOf ( :Human :Robot :Machine :Sensor )
+                       ] ;
+           rdfs:range :Environment .
+
+### Data Properties
+:skillLevel rdf:type owl:DatatypeProperty ;
+            rdfs:domain :Human ;
+            rdfs:range xsd:integer .
+
+:status rdf:type owl:DatatypeProperty ;
+        rdfs:domain :Machine ;
+        rdfs:range xsd:string .
+
+:dataValue rdf:type owl:DatatypeProperty ;
+           rdfs:domain :Sensor ;
+           rdfs:range xsd:string .

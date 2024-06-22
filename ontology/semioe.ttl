@@ -1,0 +1,352 @@
+@prefix bot: <https://w3id.org/bot#> .
+@prefix ioe: <http://w3id.org/semioe#> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ssn: <http://www.w3.org/ns/ssn/> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+<http://w3id.org/semioe#> rdf:type owl:Ontology ;
+                           owl:imports org: ;
+                           <http://purl.org/dc/elements/1.1/created> "2023/12/20 18:44:00" ;
+                           <http://purl.org/dc/elements/1.1/title> "SemIoE" ;
+                           dcterms:creator [ rdf:type foaf:Agent ;
+                                             foaf:homepage <https://orcid.org/0000-0001-5966-6921> ;
+                                             foaf:name "Emanuele Storti"
+                                           ] ,
+                                           [ rdf:type foaf:Agent ;
+                                             foaf:homepage <https://orcid.org/0000-0003-2120-2341> ;
+                                             foaf:name "Antonino Nocera"
+                                           ] ,
+                                           [ rdf:type foaf:Agent ;
+                                             foaf:homepage <https://orcid.org/0000-0002-3371-307X> ;
+                                             foaf:name "Marco Arazzi"
+                                           ] ;
+                           dcterms:license <https://creativecommons.org/licenses/by/4.0> ;
+                           vann:preferredNamespacePrefix "ioe" ;
+                           vann:preferredNamespaceUri <https://w3id.org/semioe#> ;
+                           rdfs:comment "The SemIoE ontology is aimed to represent resources and their relations in a Internet-of-Everything network." ;
+                           rdfs:label "SemIoE" ;
+                           owl:versionInfo "0.9" .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://purl.org/dc/elements/1.1/created
+<http://purl.org/dc/elements/1.1/created> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/title
+<http://purl.org/dc/elements/1.1/title> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/creator
+dcterms:creator rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/vocab/vann/preferredNamespacePrefix
+vann:preferredNamespacePrefix rdf:type owl:AnnotationProperty ;
+                              rdfs:subPropertyOf vann:preferredNamespacePrefix .
+
+
+###  http://purl.org/vocab/vann/preferredNamespaceUri
+vann:preferredNamespaceUri rdf:type owl:AnnotationProperty .
+
+
+###  http://xmlns.com/foaf/0.1/maker
+foaf:maker rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://w3id.org/semioe#engagedIn
+ioe:engagedIn rdf:type owl:ObjectProperty ;
+              rdfs:domain ioe:Agent ;
+              rdfs:range ioe:Activity ;
+              rdfs:comment "Relates an ioe:Agent to the ioe:Activity which she/he is engaged with." ;
+              rdfs:label "engagedIn" .
+
+
+###  http://w3id.org/semioe#forRole
+ioe:forRole rdf:type owl:ObjectProperty ;
+            rdfs:domain ioe:Right ;
+            rdfs:range ioe:CurrentRole .
+
+
+###  http://w3id.org/semioe#forWorkflowElement
+ioe:forWorkflowElement rdf:type owl:ObjectProperty ;
+                       rdfs:domain ioe:AgentRelation ;
+                       rdfs:range ioe:WorkflowElement ;
+                       rdfs:comment "Relates an ioe:ActorRelation with the ioe:WorkflowElement for which the relation is established." ;
+                       rdfs:label "forWorkflowElement" .
+
+
+###  http://w3id.org/semioe#fromAgent
+ioe:fromAgent rdf:type owl:ObjectProperty ;
+              rdfs:domain ioe:AgentRelation ;
+              rdfs:range ioe:Agent ;
+              rdfs:comment "Relates an ioe:ActorRelation to the ioe:Agent initiating the relation." ;
+              rdfs:label "fromAgent" .
+
+
+###  http://w3id.org/semioe#hasType
+ioe:hasType rdf:type owl:ObjectProperty ;
+            rdfs:domain ioe:Right ;
+            rdfs:range ioe:RightType ;
+            rdfs:comment "Specifies the type of a ioe:Right" ;
+            rdfs:label "hasType" .
+
+
+###  http://w3id.org/semioe#inProcess
+ioe:inProcess rdf:type owl:ObjectProperty ;
+              rdfs:domain ioe:Activity ;
+              rdfs:range ioe:Process ;
+              rdfs:comment "Relates an ioe:Activity to the ioe:Process to which it belongs" ;
+              rdfs:label "inProcess" .
+
+
+###  http://w3id.org/semioe#includedIn
+ioe:includedIn rdf:type owl:ObjectProperty ,
+                        owl:FunctionalProperty ;
+               rdfs:domain ioe:System ;
+               rdfs:range ioe:SmartObject ;
+              rdfs:comment "Relates an ioe:System to the ioe:SmartObject which includes it" ;
+              rdfs:label "includedIn" .
+
+
+
+###  http://w3id.org/semioe#locatedIn
+ioe:locatedIn rdf:type owl:ObjectProperty ,
+                       owl:FunctionalProperty ;
+              rdfs:domain ioe:Agent ;
+              rdfs:range ioe:Site ;
+              rdfs:comment "Relates an ioe:Agent to the ioe:Site in which she/he is located." ;
+              rdfs:label "locatedIn" .
+
+
+###  http://w3id.org/semioe#onEnvironment
+ioe:onEnvironment rdf:type owl:ObjectProperty ;
+                  rdfs:domain ioe:RightOnEnvironment ;
+                  rdfs:range ioe:Site ;
+                  rdfs:comment "Specifies the ioe:Site on which the ioe:RightOnEnvironment applies." ;
+                  rdfs:label "onEnvironment" .
+
+
+###  http://w3id.org/semioe#onSmartObject
+ioe:onSmartObject rdf:type owl:ObjectProperty ;
+                  rdfs:domain ioe:RightOnSmartObject ;
+                  rdfs:range ioe:SmartObject ;
+                  rdfs:comment "Specifies the ioe:SmartObject on which the ioe:RightOnSmartObject applies." ;
+                  rdfs:label "onSmartObject" .
+
+
+###  http://w3id.org/semioe#onSystem
+ioe:onSystem rdf:type owl:ObjectProperty ;
+             rdfs:domain ioe:RightOnSystem ;
+             rdfs:range ssn:System ;
+             rdfs:comment "Specifies the ssn:System on which the ioe:RightOnSystem applies." ;
+             rdfs:label "onSystem" .
+
+
+###  http://w3id.org/semioe#toAgent
+ioe:toAgent rdf:type owl:ObjectProperty ;
+            rdfs:domain ioe:AgentRelation ;
+            rdfs:range ioe:Agent ;
+            rdfs:comment "Relates an ioe:ActorRelation to the ioe:Agent that is the object of the relation." ;
+            rdfs:label "toAgent" .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://w3id.org/semioe#endTime
+ioe:endTime rdf:type owl:DatatypeProperty ;
+            rdfs:domain ioe:CurrentRole ;
+            rdfs:range xsd:dateTime ;
+            rdfs:comment "The dateTime representing the end of the relation" ;
+            rdfs:label "endTime" .
+
+
+###  http://w3id.org/semioe#isTransferable
+ioe:isTransferable rdf:type owl:DatatypeProperty ;
+                    rdfs:domain ioe:CurrentRole ;
+                    rdfs:range xsd:boolean ;
+                    rdfs:comment "Specifies whether an ioe:CurrentRole can be transfered from an ioe:Agent to another" ;
+                    rdfs:label "isTransferable" .
+
+
+###  http://w3id.org/semioe#startTime
+ioe:startTime rdf:type owl:DatatypeProperty ;
+              rdfs:domain ioe:CurrentRole ;
+              rdfs:range xsd:dateTime ;
+              rdfs:comment "The dateTime representing the start of the relation" ;
+              rdfs:label "startTime" .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://w3id.org/semioe#Activity
+ioe:Activity rdf:type owl:Class ;
+             rdfs:subClassOf ioe:WorkflowElement ;
+             rdfs:comment "An activity in a ioe:Process of the organization." ;
+             rdfs:label "Activity" .
+
+
+###  http://w3id.org/semioe#Agent
+ioe:Agent rdf:type owl:Class ;
+          owl:equivalentClass [ rdf:type owl:Restriction ;
+                                owl:onProperty ioe:locatedIn ;
+                                owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                owl:onClass ioe:Site
+                              ] ;
+          rdfs:comment "An agent in the IoE network. The class is a generalization of foaf:Agent and ioe:SmartObject." ;
+          rdfs:label "Agent" .
+
+
+###  http://w3id.org/semioe#AgentRelation
+ioe:AgentRelation rdf:type owl:Class ;
+                  rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                    owl:onProperty ioe:forWorkflowElement ;
+                                    owl:someValuesFrom ioe:Activity
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty ioe:fromAgent ;
+                                    owl:someValuesFrom ioe:Agent
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty ioe:toAgent ;
+                                    owl:someValuesFrom ioe:Agent
+                                  ] ;
+                  rdfs:comment "A relation between two Agents for the execution of an Activity. The relation involves one or more Rights of the agent which establishes the relation to the other agent." ;
+                  rdfs:label "AgentRelation" .
+
+
+###  http://w3id.org/semioe#Collaboration
+ioe:Collaboration rdf:type owl:Class ;
+                  rdfs:subClassOf ioe:AgentRelation ;
+                  rdfs:comment "A type of ActorRelation which involves a collaboration between two Agents." ;
+                  rdfs:label "Collaboration" .
+
+
+###  http://w3id.org/semioe#CurrentRole
+ioe:CurrentRole rdf:type owl:Class ;
+                rdfs:subClassOf org:Role ;
+                rdfs:comment "The current role of a foaf:Agent." ;
+                rdfs:label "CurrentRole" .
+
+
+###  http://w3id.org/semioe#Delegation
+ioe:Delegation rdf:type owl:Class ;
+               rdfs:subClassOf ioe:AgentRelation ;
+               rdfs:comment "A type of ActorRelation which involves a delegation of tasks from an Agent to another Agent." ;
+               rdfs:label "Delegation" .
+
+
+###  http://w3id.org/semioe#HAgent
+ioe:HAgent rdf:type owl:Class ;
+           rdfs:subClassOf ioe:Agent ,
+                           foaf:Agent ;
+           rdfs:comment "A human agent." ;
+           rdfs:label "HAgent" .
+
+
+
+###  http://w3id.org/semioe#Process
+ioe:Process rdf:type owl:Class ;
+            rdfs:subClassOf ioe:WorkflowElement ;
+            rdfs:comment "A process defined by the organization." ;
+            rdfs:label "Process" .
+
+
+###  http://w3id.org/semioe#Right
+ioe:Right rdf:type owl:Class ;
+          rdfs:subClassOf [ rdf:type owl:Restriction ;
+                            owl:onProperty ioe:hasType ;
+                            owl:someValuesFrom ioe:RightType
+                          ] ;
+          rdfs:comment "A right that can be associated to the ioe:CurrentRole of a foaf:Agent." ;
+          rdfs:label "Right" .
+
+
+###  http://w3id.org/semioe#RightOnEnvironment
+ioe:RightOnEnvironment rdf:type owl:Class ;
+                       rdfs:subClassOf ioe:Right ,
+                                       [ rdf:type owl:Restriction ;
+                                         owl:onProperty ioe:onEnvironment ;
+                                         owl:someValuesFrom ioe:Site
+                                       ] ;
+                       rdfs:comment "A type of ioe:Right that is defined on all ioe:SmartObjects located in a ioe:Environment." ;
+                       rdfs:label "RightOnEnvironment" .
+
+
+###  http://w3id.org/semioe#RightOnSmartObject
+ioe:RightOnSmartObject rdf:type owl:Class ;
+                       rdfs:subClassOf ioe:Right ,
+                                       [ rdf:type owl:Restriction ;
+                                         owl:onProperty ioe:onSmartObject ;
+                                         owl:someValuesFrom ioe:SmartObject
+                                       ] ;
+                       rdfs:comment "A type of ioe:Right that is defined on a ioe:SmartObject, including all its ssn:Systems." ;
+                       rdfs:label "RightOnSmartObject" .
+
+
+###  http://w3id.org/semioe#RightOnSystem
+ioe:RightOnSystem rdf:type owl:Class ;
+                  rdfs:subClassOf ioe:Right ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty ioe:onSystem ;
+                                    owl:someValuesFrom ssn:System
+                                  ] ;
+                  rdfs:comment "A type of ioe:Right that is defined on a ioe:System." ;
+                  rdfs:label "RightOnSystem" .
+
+
+###  http://w3id.org/semioe#RightType
+ioe:RightType rdf:type owl:Class ;
+              rdfs:comment "The type of a ioe:Right, e.g. read, write." ;
+              rdfs:label "RightType" .
+
+
+###  http://w3id.org/semioe#Site
+ioe:Site rdf:type owl:Class ;
+         rdfs:subClassOf org:Site ,
+                         bot:Site ;
+         rdfs:comment "A location in the organization, e.g. a room, a building." ;
+         rdfs:label "Site" .
+
+
+###  http://w3id.org/semioe#SmartObject
+ioe:SmartObject rdf:type owl:Class ;
+                rdfs:subClassOf ioe:Agent ;
+                rdfs:comment "A smart object in the IoE network, which can include one or more ssn:System." ;
+                rdfs:label "SmartObject" .
+
+
+###  http://w3id.org/semioe#System
+ioe:System rdf:type owl:Class ;
+           owl:equivalentClass [ rdf:type owl:Restriction ;
+                                 owl:onProperty ioe:locatedIn ;
+                                 owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                 owl:onClass ioe:SmartObject
+                               ] ;
+           rdfs:subClassOf ssn:System ;
+           rdfs:comment "A system inside a SmartObject" ;
+           rdfs:label "System" .
+
+
+###  http://w3id.org/semioe#WorkflowElement
+ioe:WorkflowElement rdf:type owl:Class ;
+                    rdfs:comment "A generic workflow element, which can be either an ioe:Activity or an ioe:Process in the organization." ;
+                    rdfs:label "WorkflowElement" .
+

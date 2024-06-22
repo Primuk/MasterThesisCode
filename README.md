@@ -163,3 +163,9 @@ Also included is a code sample to read data from a topic using spark sql. To vie
     --jars kafka-clients-2.2.0.jar,neo4j-connector-apache-spark_2.11-4.1.5_for_spark_2.4.jar \
     --driver-class-path kafka-clients-2.2.0.jar \
     spark-aggregator.py```
+
+Neo4j Delete Nodes - 
+match(n)
+WITH (n) LIMIT 40000
+DETACH DELETE n
+RETURN count(*);

@@ -1,77 +1,237 @@
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix sosa: <http://www.w3.org/ns/sosa/> .
-@prefix ssn:  <http://www.w3.org/ns/ssn/> .
-@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
-@base <http://example.org/data/> .
+@prefix : <http://example.org/robotics#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://example.org/robotics#> .
 
-# Define the robot arm sensor
-<robotArmSensor> rdf:type sosa:Sensor ;
-  sosa:observes <vehicleDiagnostics/position_x> , <vehicleDiagnostics/position_y> ,
-                <vehicleDiagnostics/velocity_x> , <vehicleDiagnostics/velocity_y> ,
-                <vehicleDiagnostics/acceleration_x> , <vehicleDiagnostics/acceleration_y> ,
-                <vehicleDiagnostics/pressure> , <vehicleDiagnostics/temperature> ,
-                <vehicleDiagnostics/more_details> ;
-  sosa:madeObservation <observation/1> , <observation/2> , <observation/3> , <observation/4> ,
-                        <observation/5> , <observation/6> , <observation/7> , <observation/8> ,
-                        <observation/9> .
+[ rdf:type owl:Ontology
+ ] .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://example.org/robotics#hasSensor
+:hasSensor rdf:type owl:ObjectProperty ;
+           rdfs:domain :RobotArm ;
+           rdfs:range :Sensor ;
+           rdfs:comment "Relates a robot arm to its sensors." ;
+           rdfs:label "hasSensor" .
 
 
-# Define observations made by the robot arm sensor
-<observation/1> rdf:type sosa:Observation ;
-  sosa:observedProperty <vehicleDiagnostics/position_x> ;
-  sosa:madeBySensor <robotArmSensor> ;
-  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
-  sosa:hasSimpleResult "10"^^xsd:integer .
+###  http://example.org/robotics#locatedAt
+:locatedAt rdf:type owl:ObjectProperty ;
+           rdfs:domain :RobotArm ;
+           rdfs:range :Location ;
+           rdfs:comment "Specifies the location of the robot arm." ;
+           rdfs:label "locatedAt" .
 
-<observation/2> rdf:type sosa:Observation ;
-  sosa:observedProperty <vehicleDiagnostics/position_y> ;
-  sosa:madeBySensor <robotArmSensor> ;
-  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
-  sosa:hasSimpleResult "15"^^xsd:integer .
 
-# Define observations for velocity properties
-<observation/3> rdf:type sosa:Observation ;
-  sosa:observedProperty <vehicleDiagnostics/velocity_x> ;
-  sosa:madeBySensor <robotArmSensor> ;
-  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
-  sosa:hasSimpleResult "2"^^xsd:integer .
+###  http://example.org/robotics#monitors
+:monitors rdf:type owl:ObjectProperty ;
+          rdfs:domain :EnvironmentSensor ;
+          rdfs:range :Environment ;
+          rdfs:comment "Relates an environment sensor to the environment it monitors." ;
+          rdfs:label "monitors" .
 
-<observation/4> rdf:type sosa:Observation ;
-  sosa:observedProperty <vehicleDiagnostics/velocity_y> ;
-  sosa:madeBySensor <robotArmSensor> ;
-  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
-  sosa:hasSimpleResult "3"^^xsd:integer .
 
-# Define observations for acceleration properties
-<observation/5> rdf:type sosa:Observation ;
-  sosa:observedProperty <vehicleDiagnostics/acceleration_x> ;
-  sosa:madeBySensor <robotArmSensor> ;
-  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
-  sosa:hasSimpleResult "0.5"^^xsd:decimal .
+###  http://example.org/robotics#poweredBy
+:poweredBy rdf:type owl:ObjectProperty ;
+           rdfs:domain :RobotArm ;
+           rdfs:range :PowerSupply ;
+           rdfs:comment "Specifies the power supply for the robot arm." ;
+           rdfs:label "poweredBy" .
 
-<observation/6> rdf:type sosa:Observation ;
-  sosa:observedProperty <vehicleDiagnostics/acceleration_y> ;
-  sosa:madeBySensor <robotArmSensor> ;
-  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
-  sosa:hasSimpleResult "-0.2"^^xsd:decimal .
 
-# Define observations for pressure and temperature properties
-<observation/7> rdf:type sosa:Observation ;
-  sosa:observedProperty <vehicleDiagnostics/pressure> ;
-  sosa:madeBySensor <robotArmSensor> ;
-  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
-  sosa:hasSimpleResult "100"^^xsd:integer .
+###  http://example.org/robotics#records
+:records rdf:type owl:ObjectProperty ;
+         rdfs:domain :Sensor ;
+         rdfs:range :Log ;
+         rdfs:comment "Relates a sensor to the logs it records." ;
+         rdfs:label "records" .
 
-<observation/8> rdf:type sosa:Observation ;
-  sosa:observedProperty <vehicleDiagnostics/temperature> ;
-  sosa:madeBySensor <robotArmSensor> ;
-  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
-  sosa:hasSimpleResult "25"^^xsd:decimal .
 
-# Define observations for additional details
-<observation/9> rdf:type sosa:Observation ;
-  sosa:observedProperty <vehicleDiagnostics/more_details> ;
-  sosa:madeBySensor <robotArmSensor> ;
-  sosa:resultTime "2024-04-24T08:00:00Z"^^xsd:dateTime ;
-  sosa:hasSimpleResult "Any additional details you want to include"^^xsd:string .
+#################################################################
+#    Data properties
+#################################################################
 
+###  http://example.org/robotics#hasAcceleration
+:hasAcceleration rdf:type owl:DatatypeProperty ;
+                 rdfs:domain :AccelerationSensor ;
+                 rdfs:range xsd:float ;
+                 rdfs:comment "Records the acceleration measured by the acceleration sensor." ;
+                 rdfs:label "hasAcceleration" .
+
+
+###  http://example.org/robotics#hasAirQuality
+:hasAirQuality rdf:type owl:DatatypeProperty ;
+               rdfs:domain :AirQualitySensor ;
+               rdfs:range xsd:string ;
+               rdfs:comment "Records the air quality measured by the air quality sensor." ;
+               rdfs:label "hasAirQuality" .
+
+
+###  http://example.org/robotics#hasForce
+:hasForce rdf:type owl:DatatypeProperty ;
+          rdfs:domain :ForceTorqueSensor ;
+          rdfs:range xsd:float ;
+          rdfs:comment "Records the force measured by the force/torque sensor." ;
+          rdfs:label "hasForce" .
+
+
+###  http://example.org/robotics#hasHumidity
+:hasHumidity rdf:type owl:DatatypeProperty ;
+             rdfs:domain :HumiditySensor ;
+             rdfs:range xsd:float ;
+             rdfs:comment "Records the humidity measured by the humidity sensor." ;
+             rdfs:label "hasHumidity" .
+
+
+###  http://example.org/robotics#hasPosition
+:hasPosition rdf:type owl:DatatypeProperty ;
+             rdfs:domain :PositionSensor ;
+             rdfs:range xsd:float ;
+             rdfs:comment "Records the position measured by the position sensor." ;
+             rdfs:label "hasPosition" .
+
+
+###  http://example.org/robotics#hasTemperature
+:hasTemperature rdf:type owl:DatatypeProperty ;
+                rdfs:domain :TemperatureSensor ;
+                rdfs:range xsd:float ;
+                rdfs:comment "Records the temperature measured by the temperature sensor." ;
+                rdfs:label "hasTemperature" .
+
+
+###  http://example.org/robotics#hasVelocity
+:hasVelocity rdf:type owl:DatatypeProperty ;
+             rdfs:domain :VelocitySensor ;
+             rdfs:range xsd:float ;
+             rdfs:comment "Records the velocity measured by the velocity sensor." ;
+             rdfs:label "hasVelocity" .
+
+
+###  http://example.org/robotics#hasVoltage
+:hasVoltage rdf:type owl:DatatypeProperty ;
+            rdfs:domain :PowerSupply ;
+            rdfs:range xsd:float ;
+            rdfs:comment "Specifies the voltage of the power supply." ;
+            rdfs:label "hasVoltage" .
+
+
+###  http://example.org/robotics#inBuilding
+:inBuilding rdf:type owl:DatatypeProperty ;
+            rdfs:domain :Location ;
+            rdfs:range xsd:string ;
+            rdfs:comment "Specifies the building name where the location is situated." ;
+            rdfs:label "inBuilding" .
+
+
+###  http://example.org/robotics#inWorkstation
+:inWorkstation rdf:type owl:DatatypeProperty ;
+               rdfs:domain :Location ;
+               rdfs:range xsd:string ;
+               rdfs:comment "Specifies the workstation identifier within a building." ;
+               rdfs:label "inWorkstation" .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://example.org/robotics#AccelerationSensor
+:AccelerationSensor rdf:type owl:Class ;
+                    rdfs:subClassOf :Sensor .
+
+
+###  http://example.org/robotics#AirQualitySensor
+:AirQualitySensor rdf:type owl:Class ;
+                  rdfs:subClassOf :EnvironmentSensor .
+
+
+###  http://example.org/robotics#Building
+:Building rdf:type owl:Class ;
+          rdfs:subClassOf :Location .
+
+
+###  http://example.org/robotics#Environment
+:Environment rdf:type owl:Class .
+
+
+###  http://example.org/robotics#EnvironmentSensor
+:EnvironmentSensor rdf:type owl:Class ;
+                   rdfs:subClassOf :Environment .
+
+
+###  http://example.org/robotics#ErrorLog
+:ErrorLog rdf:type owl:Class ;
+          rdfs:subClassOf :Log .
+
+
+###  http://example.org/robotics#ForceTorqueSensor
+:ForceTorqueSensor rdf:type owl:Class ;
+                   rdfs:subClassOf :Sensor .
+
+
+###  http://example.org/robotics#HumiditySensor
+:HumiditySensor rdf:type owl:Class ;
+                rdfs:subClassOf :EnvironmentSensor .
+
+
+###  http://example.org/robotics#Location
+:Location rdf:type owl:Class ;
+          rdfs:subClassOf :RobotArm .
+
+
+###  http://example.org/robotics#Log
+:Log rdf:type owl:Class ;
+     rdfs:subClassOf :RobotArm .
+
+
+###  http://example.org/robotics#PerformanceLog
+:PerformanceLog rdf:type owl:Class ;
+                rdfs:subClassOf :Log .
+
+
+###  http://example.org/robotics#PositionSensor
+:PositionSensor rdf:type owl:Class ;
+                rdfs:subClassOf :Sensor .
+
+
+###  http://example.org/robotics#PowerSupply
+:PowerSupply rdf:type owl:Class ;
+             rdfs:subClassOf :Location .
+
+
+###  http://example.org/robotics#RobotArm
+:RobotArm rdf:type owl:Class .
+
+
+###  http://example.org/robotics#Sensor
+:Sensor rdf:type owl:Class ;
+        rdfs:subClassOf :RobotArm .
+
+
+###  http://example.org/robotics#TemperatureSensor
+:TemperatureSensor rdf:type owl:Class ;
+                   rdfs:subClassOf :EnvironmentSensor .
+
+
+###  http://example.org/robotics#VelocitySensor
+:VelocitySensor rdf:type owl:Class ;
+                rdfs:subClassOf :Sensor .
+
+
+###  http://example.org/robotics#WarningLog
+:WarningLog rdf:type owl:Class ;
+            rdfs:subClassOf :Log .
+
+
+###  http://example.org/robotics#Workstation
+:Workstation rdf:type owl:Class ;
+             rdfs:subClassOf :Location .
+
+
+###  Generated by the OWL API (version 4.5.26.2023-07-17T20:34:13Z) https://github.com/owlcs/owlapi
