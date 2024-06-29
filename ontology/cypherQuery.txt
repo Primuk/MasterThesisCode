@@ -1,0 +1,35 @@
+// Create Thing Node
+CREATE (:Thing {name: 'Thing'});
+
+// Create Classes (Nodes) with Data Properties
+CREATE (:RobotArm {name: 'RobotArm', hasRobotName: 'RoboArm1'});
+CREATE (:Joint {name: 'Joint', hasJointType: 'Revolute'});
+CREATE (:Sensor {name: 'Sensor', hasAcceleration: 1.5, hasCurrent: 2.0, hasForce: 3.0, hasPositionX: 0.5, hasPositionY: 1.0, hasPositionZ: 1.5, hasTorque: 4.0, hasVelocity: 2.5});
+CREATE (:Location {name: 'Location', inBuilding: 'BuildingA', inWorkstation: 'Workstation5'});
+CREATE (:PowerSupply {name: 'PowerSupply', hasVoltage: 220.0});
+CREATE (:Environment {name: 'Environment'});
+CREATE (:EnvironmentSensor {name: 'EnvironmentSensor'});
+CREATE (:AirQualitySensor {name: 'AirQualitySensor', hasAirQuality: 'Good'});
+CREATE (:HumiditySensor {name: 'HumiditySensor', hasHumidity: 45.0});
+CREATE (:TemperatureSensor {name: 'TemperatureSensor', hasTemperature: 22.0});
+CREATE (:Log {name: 'Log'});
+CREATE (:WarnLog {name: 'WarnLog', hasTimestamp: datetime('2023-06-01T12:35:56'), hasMessage: 'Warning log message'});
+CREATE (:InfoLog {name: 'InfoLog', hasTimestamp: datetime('2023-06-01T12:36:56'), hasMessage: 'Info log message'});
+CREATE (:ErrorLog {name: 'ErrorLog', hasTimestamp: datetime('2023-06-01T12:37:56'), hasMessage: 'Error log message'});
+
+MATCH (a:RobotArm), (b:Thing) CREATE (b)-[:HAS_A]->(a);
+MATCH (a:Environment), (b:Thing) CREATE (b)-[:HAS_A]->(a);
+MATCH (a:EnvironmentSensor), (b:Environment) CREATE (b)-[:HAS_READING]->(a);
+MATCH (a:AirQualitySensor), (b:EnvironmentSensor) CREATE (b)-[:HAS_AIRQUALITY]->(a);
+MATCH (a:HumiditySensor), (b:EnvironmentSensor) CREATE (b)-[:HAS_HUMIDITY]->(a);
+MATCH (a:TemperatureSensor), (b:EnvironmentSensor) CREATE (b)-[:HAS_TEMPERATURE]->(a);
+MATCH (a:WarnLog), (b:Log) CREATE (b)-[:HAS_RECORD]->(a);
+MATCH (a:InfoLog), (b:Log) CREATE (b)-[:HAS_RECORD]->(a);
+MATCH (a:ErrorLog), (b:Log) CREATE (b)-[:HAS_RECORD]->(a);
+
+// Create Object Properties (Relationships)
+MATCH (a:RobotArm), (b:Joint) CREATE (a)-[:HAS_JOINT]->(b);
+MATCH (a:Environment), (b:Location) CREATE (a)-[:HAS_LOCATION]->(b);
+MATCH (a:Joint), (b:Sensor) CREATE (a)-[:HAS_SENSOR]->(b);
+MATCH (a:Location), (b:PowerSupply) CREATE (a)-[:POWERED_BY]->(b);
+MATCH (a:RobotArm), (b:Log) CREATE (a)-[:HAS_LOGS]->(b);
