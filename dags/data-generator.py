@@ -25,7 +25,7 @@ dag = DAG(
 )
 
 # Define the command to run the data generation script
-script_path = "/app/data/robotArm.py"
+script_path = "/app/data/robotArm_validation.py"
 generate_data_command = 'python {}'.format(script_path)
 
 # Define the command to activate virtual environment and install dependencies

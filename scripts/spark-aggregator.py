@@ -1,9 +1,8 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import window, min, max, col, avg, udf,lag, when,lit
+from pyspark.sql.functions import window, min, max, col, avg, when
 from pyspark.sql import functions as F
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
-from pyspark.sql.window import Window
-import logging
+from neo4j import GraphDatabase
 
 # Initialize SparkSession
 spark = SparkSession.builder \
@@ -13,12 +12,8 @@ spark = SparkSession.builder \
 # Define the schema for reading data from HDFS
 schema_read = StructType([
     StructField("timestamp", TimestampType(), True),
-    StructField("load", DoubleType(), True),
     StructField("velocity", DoubleType(), True),
-    StructField("temperature", DoubleType(), True),
-    StructField("pressure", DoubleType(), True),
-    StructField("gripper_status", StringType(), True),
-    StructField("proximity", StringType(), True),
+    StructField("current", DoubleType(), True),
     StructField("position", StructType([
         StructField("x", DoubleType(), True),
         StructField("y", DoubleType(), True),
@@ -37,7 +32,17 @@ schema_read = StructType([
     StructField("force_z", DoubleType(), True),
     StructField("torque_x", DoubleType(), True),
     StructField("torque_y", DoubleType(), True),
-    StructField("torque_z", DoubleType(), True)
+    StructField("torque_z", DoubleType(), True),
+    StructField("environment", StructType([
+        StructField("temperature", DoubleType(), True),
+        StructField("humidity", DoubleType(), True),
+        StructField("air_quality", StringType(), True)
+    ]), True),
+    StructField("log", StructType([
+        StructField("type", StringType(), True),
+        StructField("timestamp", TimestampType(), True),
+        StructField("message", StringType(), True)
+    ]), True)
 ])
 
 # Read streaming data from HDFS
@@ -46,25 +51,41 @@ streaming_df = spark.readStream \
     .format("parquet") \
     .load("/app/staging")
 
-# Calculate min and max temperatures over a 5-minute window
+# Calculate min, max, and average temperatures over a 5-minute window
 result_df = streaming_df \
     .withWatermark("timestamp", "5 minutes") \
     .groupBy(window("timestamp", "5 minutes")) \
-    .agg(min("temperature").alias("min_temperature"), max("temperature").alias("max_temperature"),
-         avg("temperature").alias("avg_temperature"))
+    .agg(min("environment.temperature").alias("min_temperature"), 
+         max("environment.temperature").alias("max_temperature"),
+         avg("environment.temperature").alias("avg_temperature"))
 
 result_df = result_df.withColumn(
     "status", 
-    when(50 < col("avg_temperature"), "ALERT").otherwise("NORMAL")
+    when(col("avg_temperature") > 30, "ALERT").otherwise("NORMAL")
 )
-#Set property of those nodes as status "Normal" or alert in neo4j for those having timestamp in the same window
-#TODO
 
-# Display the result
+# Define a function to update the status in Neo4j
+def update_neo4j_status(rows):
+    neo4j_url = "bolt://host.docker.internal:7687"
+    neo4j_user = "neo4j"
+    neo4j_password = "12345678"
+    driver = GraphDatabase.driver(neo4j_url, auth=(neo4j_user, neo4j_password))
+    with driver.session() as session:
+        for row in rows:
+            start_time = row['window']['start']
+            end_time = row['window']['end']
+            status = row['status']
+            query = """
+            MATCH (t:timestamp)
+            WHERE t.timestamp >= $start_time AND t.timestamp < $end_time
+            SET t.status = $status
+            """
+            session.run(query, start_time=start_time, end_time=end_time, status=status)
+
+# Write the result to console and also update Neo4j
 query = result_df.writeStream \
-    .outputMode("complete") \
-    .format("console") \
+    .outputMode("update") \
+    .foreachBatch(lambda batch_df, batch_id: batch_df.foreach(update_neo4j_status)) \
     .start()
 
 query.awaitTermination()
-query.stop()

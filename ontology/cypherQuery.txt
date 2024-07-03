@@ -33,3 +33,153 @@ MATCH (a:Environment), (b:Location) CREATE (a)-[:HAS_LOCATION]->(b);
 MATCH (a:Joint), (b:Sensor) CREATE (a)-[:HAS_SENSOR]->(b);
 MATCH (a:Location), (b:PowerSupply) CREATE (a)-[:POWERED_BY]->(b);
 MATCH (a:RobotArm), (b:Log) CREATE (a)-[:HAS_LOGS]->(b);
+
+
+#########################################################################################
+
+UNWIND $events AS event
+    CREATE (:Thing {name: 'Thing'}),
+        (:RobotArm {name: 'RobotArm', hasRobotName: 'RobotArm1}),
+        (:Joint {name: 'Joint', hasJointType: event.hasJointType}),
+        (:Sensor {name: 'Sensor', hasAcceleration: event.hasAcceleration, hasCurrent: event.hasCurrent, hasForce: event.hasForce, hasPositionX: event.hasPositionX, hasPositionY: event.hasPositionY, hasPositionZ: event.hasPositionZ, hasTorque: event.hasTorque, hasVelocity: event.hasVelocity}),
+        (:Location {name: 'Location', inBuilding: event.inBuilding, inWorkstation: event.inWorkstation}),
+        (:PowerSupply {name: 'PowerSupply', hasVoltage: event.hasVoltage}),
+        (:Environment {name: 'Environment'}),
+        (:EnvironmentSensor {name: 'EnvironmentSensor'}),
+        (:AirQualitySensor {name: 'AirQualitySensor', hasAirQuality: event.hasAirQuality}),
+        (:HumiditySensor {name: 'HumiditySensor', hasHumidity: event.hasHumidity}),
+        (:TemperatureSensor {name: 'TemperatureSensor', hasTemperature: event.hasTemperature}),
+        (:Log {name: 'Log'}),
+        (:WarnLog {name: 'WarnLog', hasTimestamp: datetime(event.hasWarnLogTimestamp), hasMessage: event.hasWarnLogMessage}),
+        (:InfoLog {name: 'InfoLog', hasTimestamp: datetime(event.hasInfoLogTimestamp), hasMessage: event.hasInfoLogMessage}),
+        (:ErrorLog {name: 'ErrorLog', hasTimestamp: datetime(event.hasErrorLogTimestamp), hasMessage: event.hasErrorLogMessage}),
+        (a:RobotArm)-[:HAS_JOINT]->(b:Joint),
+        (a:Joint)-[:HAS_SENSOR]->(c:Sensor),
+        (d:Thing)-[:HAS_A]->(a:RobotArm),
+        (d:Thing)-[:HAS_A]->(e:Environment),
+        (e:Environment)-[:HAS_READING]->(f:EnvironmentSensor),
+        (f:EnvironmentSensor)-[:HAS_AIRQUALITY]->(g:AirQualitySensor),
+        (f:EnvironmentSensor)-[:HAS_HUMIDITY]->(h:HumiditySensor),
+        (f:EnvironmentSensor)-[:HAS_TEMPERATURE]->(i:TemperatureSensor),
+        (a:RobotArm)-[:HAS_LOGS]->(j:Log),
+        (j:Log)-[:HAS_RECORD]->(k:WarnLog),
+        (j:Log)-[:HAS_RECORD]->(l:InfoLog),
+        (j:Log)-[:HAS_RECORD]->(m:ErrorLog),
+        (e:Environment)-[:HAS_LOCATION]->(n:Location),
+        (n:Location)-[:POWERED_BY]->(o:PowerSupply)
+#################################################################################################
+
+// Create or match existing nodes and relationships
+MERGE (t:Thing {name: 'Thing'})
+MERGE (r:RobotArm {name: 'RobotArm', hasRobotName: 'RoboArm1'})
+MERGE (e:Environment {name: 'Environment'})
+MERGE (es:EnvironmentSensor {name: 'EnvironmentSensor'})
+MERGE (aqs:AirQualitySensor {name: 'AirQualitySensor', hasAirQuality: 'Good'})
+MERGE (hs:HumiditySensor {name: 'HumiditySensor', hasHumidity: 45.0})
+MERGE (ts:TemperatureSensor {name: 'TemperatureSensor', hasTemperature: 22.0})
+MERGE (l:Location {name: 'Location', inBuilding: 'BuildingA', inWorkstation: 'Workstation5'})
+MERGE (ps:PowerSupply {name: 'PowerSupply', hasVoltage: 220.0})
+
+// Create or match joint nodes
+MERGE (j1:Joint {name: 'Joint1', hasJointType: 'Base Joint'})
+MERGE (j2:Joint {name: 'Joint2', hasJointType: 'Shoulder Joint'})
+MERGE (j3:Joint {name: 'Joint3', hasJointType: 'Elbow Joint'})
+MERGE (j4:Joint {name: 'Joint4', hasJointType: 'Wrist 1 Joint'})
+MERGE (j5:Joint {name: 'Joint5', hasJointType: 'Wrist 2 Joint'})
+MERGE (j6:Joint {name: 'Joint6', hasJointType: 'Wrist 3 Joint'})
+
+// Create or match sensors for the current timestamp
+MERGE (s1:Sensor {name: 'Sensor1', hasTimestamp: datetime('2024-07-01T12:00:00')})
+ON CREATE SET s1.hasAcceleration = 1.5, s1.hasCurrent = 2.0, s1.hasForce = 3.0, s1.hasPositionX = 0.5, s1.hasPositionY = 1.0, s1.hasPositionZ = 1.5, s1.hasTorque = 4.0, s1.hasVelocity = 2.5
+
+MERGE (s2:Sensor {name: 'Sensor2', hasTimestamp: datetime('2024-07-01T12:00:00')})
+ON CREATE SET s2.hasAcceleration = 1.2, s2.hasCurrent = 1.8, s2.hasForce = 2.5, s2.hasPositionX = 0.4, s2.hasPositionY = 0.9, s2.hasPositionZ = 1.4, s2.hasTorque = 3.5, s2.hasVelocity = 2.0
+
+// Additional sensors for other joints
+MERGE (s3:Sensor {name: 'Sensor3', hasTimestamp: datetime('2024-07-01T12:00:00')})
+ON CREATE SET s3.hasAcceleration = 1.3, s3.hasCurrent = 1.9, s3.hasForce = 2.8, s3.hasPositionX = 0.45, s3.hasPositionY = 0.95, s3.hasPositionZ = 1.45, s3.hasTorque = 3.8, s3.hasVelocity = 2.3
+
+MERGE (s4:Sensor {name: 'Sensor4', hasTimestamp: datetime('2024-07-01T12:00:00')})
+ON CREATE SET s4.hasAcceleration = 1.4, s4.hasCurrent = 2.1, s4.hasForce = 3.1, s4.hasPositionX = 0.48, s4.hasPositionY = 0.98, s4.hasPositionZ = 1.48, s4.hasTorque = 4.1, s4.hasVelocity = 2.4
+
+MERGE (s5:Sensor {name: 'Sensor5', hasTimestamp: datetime('2024-07-01T12:00:00')})
+ON CREATE SET s5.hasAcceleration = 1.6, s5.hasCurrent = 2.3, s5.hasForce = 3.4, s5.hasPositionX = 0.52, s5.hasPositionY = 1.02, s5.hasPositionZ = 1.52, s5.hasTorque = 4.4, s5.hasVelocity = 2.6
+
+MERGE (s6:Sensor {name: 'Sensor6', hasTimestamp: datetime('2024-07-01T12:00:00')})
+ON CREATE SET s6.hasAcceleration = 1.7, s6.hasCurrent = 2.5, s6.hasForce = 3.6, s6.hasPositionX = 0.54, s6.hasPositionY = 1.04, s6.hasPositionZ = 1.54, s6.hasTorque = 4.6, s6.hasVelocity = 2.7
+
+// Create or match central Log node
+MERGE (log:Log {name: 'Log'})
+
+// Create new logs for a specific timestamp
+MERGE (wl:WarnLog {name: 'WarnLog', hasTimestamp: datetime('2024-07-01T12:00:00')})
+ON CREATE SET wl.hasMessage = 'Warning log message'
+
+MERGE (il:InfoLog {name: 'InfoLog', hasTimestamp: datetime('2024-07-01T12:00:00')})
+ON CREATE SET il.hasMessage = 'Info log message'
+
+MERGE (el:ErrorLog {name: 'ErrorLog', hasTimestamp: datetime('2024-07-01T12:00:00')})
+ON CREATE SET el.hasMessage = 'Error log message'
+
+// Create relationships if they don't exist
+MERGE (t)-[:HAS_A]->(r)
+MERGE (r)-[:HAS_JOINT]->(j1)
+MERGE (r)-[:HAS_JOINT]->(j2)
+MERGE (r)-[:HAS_JOINT]->(j3)
+MERGE (r)-[:HAS_JOINT]->(j4)
+MERGE (r)-[:HAS_JOINT]->(j5)
+MERGE (r)-[:HAS_JOINT]->(j6)
+MERGE (j1)-[:HAS_SENSOR]->(s1)
+MERGE (j2)-[:HAS_SENSOR]->(s2)
+MERGE (j3)-[:HAS_SENSOR]->(s3)
+MERGE (j4)-[:HAS_SENSOR]->(s4)
+MERGE (j5)-[:HAS_SENSOR]->(s5)
+MERGE (j6)-[:HAS_SENSOR]->(s6)
+MERGE (r)-[:HAS_LOGS]->(log)
+MERGE (log)-[:HAS_RECORD]->(wl)
+MERGE (log)-[:HAS_RECORD]->(il)
+MERGE (log)-[:HAS_RECORD]->(el)
+MERGE (t)-[:HAS_A]->(e)
+MERGE (e)-[:HAS_READING]->(es)
+MERGE (es)-[:HAS_AIRQUALITY]->(aqs)
+MERGE (es)-[:HAS_HUMIDITY]->(hs)
+MERGE (es)-[:HAS_TEMPERATURE]->(ts)
+MERGE (e)-[:HAS_LOCATION]->(l)
+MERGE (l)-[:POWERED_BY]->(ps)
+
+// Create or match the existing Log node
+MATCH (log:Log {name: 'Log'})
+
+// Create or match the new WarnLog node for a specific timestamp
+MERGE (wl:LogNotification {name: event.log_type, hasTimestamp: datetime(event.timestamp)})
+ON CREATE SET wl.hasMessage = event.log_message
+
+// Create the relationship between the Log node and the new WarnLog node
+MERGE (log)-[:HAS_RECORD {timestamp: datetime(event.timestamp)}]->(wl)
+
+// Create or match the existing sensor node for a specific timestamp
+MERGE (s:Sensor {name: event.sensor_name, hasTimestamp: datetime(event.timestamp)})
+ON CREATE SET 
+    s.hasAcceleration = event.hasAcceleration, 
+    s.hasCurrent = event.hasCurrent, 
+    s.hasForce = event.hasForce, 
+    s.hasPositionX = event.hasPositionX, 
+    s.hasPositionY = event.hasPositionY, 
+    s.hasPositionZ = event.hasPositionZ, 
+    s.hasTorque = event.hasTorque, 
+    s.hasVelocity = event.hasVelocity
+
+// Create the relationship between the sensor and the corresponding joint node
+MATCH (j:Joint {name: event.joint_name})
+MERGE (j)-[:HAS_SENSOR {timestamp: datetime(event.timestamp)}]->(s)
+
+// Update environment sensor values
+MERGE (environment:Environment {name: 'Environment'})
+MERGE (environmentSensor:EnvironmentSensor {hasTimestamp: datetime(event.timestamp)})
+ON CREATE SET 
+    environmentSensor.hasAirQuality = event.air_quality,
+    environmentSensor.hasHumidity = event.humidity,
+    environmentSensor.hasTemperature = event.temperature
+
+// Create the relationship between the environment and the environment sensor values
+MERGE (environment)-[:HAS_READING {timestamp: datetime(event.timestamp)}]->(environmentSensor)

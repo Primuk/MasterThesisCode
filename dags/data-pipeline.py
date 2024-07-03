@@ -52,12 +52,14 @@ hdfs_to_neo4j_command =  'spark-submit \
     --driver-class-path /app/kafka-clients-2.2.0.jar \
     /app/scripts/spark-aggregator.py'
 
+'''
 aggregation_task = BashOperator(
     task_id='aggregation_task_to_neo4j',
     bash_command=hdfs_to_neo4j_command,
     dag=dag,
     xcom_push=False
 )
-
+'''
 # Set task dependencies
-deploy_task >> [ingestion_task, aggregation_task]
+#deploy_task >> [ingestion_task, aggregation_task]
+deploy_task >> [ingestion_task]
