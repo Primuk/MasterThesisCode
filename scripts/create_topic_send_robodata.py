@@ -19,7 +19,7 @@ if TOPIC_NAME not in existing_topics:
 start_time = datetime.datetime.now()
 elapsed_time = datetime.timedelta(seconds=0)
 
-while elapsed_time < datetime.timedelta(minutes=10):
+while elapsed_time < datetime.timedelta(minutes=20):
     with open('../data/robot_sensor_data_validated.csv', 'r') as file:
         reader = csv.DictReader(file)
         for row in reader:

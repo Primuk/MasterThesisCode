@@ -31,9 +31,11 @@ TOPIC_NAME = 'ROBOT_STREAM_ONTO'
 # Define schema for JSON data
 schema_forJson = StructType([
     StructField("timestamp", StringType(), True),
+    StructField("sensor_name", StringType(), True),
+    StructField("joint_name", StringType(), True),
     StructField("position", StringType(), True),
     StructField("force_torque", StringType(), True),
-    StructField("joint_angles", StringType(), True),
+    StructField("joint_angle", StringType(), True),
     StructField("velocity", StringType(), True),
     StructField("current", StringType(), True),
     StructField("environment", StringType(), True),
@@ -84,19 +86,10 @@ schema_force_torque = StructType([
     ]), True)
 ])
 
-schema_joint_angles = StructType([
-    StructField("joint_1", DoubleType(), True),
-    StructField("joint_2", DoubleType(), True),
-    StructField("joint_3", DoubleType(), True),
-    StructField("joint_4", DoubleType(), True),
-    StructField("joint_5", DoubleType(), True),
-    StructField("joint_6", DoubleType(), True)
-])
-
 schema_environment = StructType([
     StructField("air_quality", StringType(), True),
     StructField("humidity", StringType(), True),
-    StructField("temperature", StringType(), True)
+    StructField("temperature", DoubleType(), True)
 ])
 
 schema_log = StructType([
@@ -108,9 +101,16 @@ schema_log = StructType([
 # Parse nested JSON columns
 df_parsed = df_parsed.withColumn("position", F.from_json("position", schema_position))
 df_parsed = df_parsed.withColumn("force_torque", F.from_json("force_torque", schema_force_torque))
-df_parsed = df_parsed.withColumn("joint_angles", F.from_json("joint_angles", schema_joint_angles))
 df_parsed = df_parsed.withColumn("environment", F.from_json("environment", schema_environment))
 df_parsed = df_parsed.withColumn("log", F.from_json("log", schema_log))
+
+# Flatten position column
+df_parsed = df_parsed.withColumn("position_x", F.col("position.x")) \
+                     .withColumn("position_y", F.col("position.y")) \
+                     .withColumn("position_z", F.col("position.z"))
+
+# Drop the original position column
+df_parsed = df_parsed.drop("position")
 
 # Flatten force_torque column
 df_parsed = df_parsed.withColumn("force_x", F.col("force_torque.force.x")) \
@@ -122,12 +122,19 @@ df_parsed = df_parsed.withColumn("force_x", F.col("force_torque.force.x")) \
 
 # Drop the original force_torque column
 df_parsed = df_parsed.drop("force_torque")
-# Flatten log column
-df_parsed = df_parsed.withColumn("environment_AirQuality", F.col("environment.air_quality")) \
+
+# Flatten environment column
+df_parsed = df_parsed.withColumn("environment_air_quality", F.col("environment.air_quality")) \
                      .withColumn("environment_humidity", F.col("environment.humidity")) \
-                     .withColumn("environment_Temperature", F.col("environment.temperature"))
+                     .withColumn("environment_temperature", F.col("environment.temperature"))
+
 # Drop the original environment column
 df_parsed = df_parsed.drop("environment")
+write_query1 = '''MATCH (log:Log {name: 'Log'}) MERGE (wl:LogNotification {name: event.log_type,timestamp: datetime(event.timestamp)}) ON CREATE SET wl.hasMessage = event.log_message MERGE (log)-[:HAS_RECORD {timestamp: datetime(event.timestamp)}]->(wl)'''
+
+write_query2 = '''MERGE (s:Sensor {name: event.sensor_name}) ON CREATE SET s.hasAcceleration = event.joint_angle, s.hasCurrent = event.current, s.hasForceX = event.force_x, s.hasForceY = event.force_y, s.hasForceZ = event.force_z, s.hasPositionX = event.position_x, s.hasPositionY = event.position_y, s.hasPositionZ = event.position_z, s.hasTorqueX = event.torque_x, s.hasTorqueY = event.torque_y, s.hasTorqueZ = event.torque_z, s.hasVelocity = event.velocity MERGE (j:Joint {name: event.joint_name}) MERGE (j)-[:HAS_SENSOR {timestamp: datetime(event.timestamp)}]->(s)'''
+
+write_query3 = '''MERGE (environment:Environment {name: 'Environment'}) MERGE (environmentSensor:EnvironmentSensor {hasTimestamp: datetime(event.timestamp)}) ON CREATE SET environmentSensor.hasAirQuality = event.environment_air_quality, environmentSensor.hasHumidity = event.environment_humidity, environmentSensor.hasTemperature = event.environment_temperature MERGE (environment)-[:HAS_READING {timestamp: datetime(event.timestamp)}]->(environmentSensor)'''
 
 # Flatten log column
 df_parsed = df_parsed.withColumn("log_timestamp", F.col("log.timestamp")) \
@@ -139,8 +146,10 @@ df_parsed = df_parsed.drop("log")
 
 # Typecast columns to correct data types
 df_parsed = df_parsed.withColumn("timestamp", col("timestamp").cast(TimestampType())) \
+                     .withColumn("joint_angle", col("joint_angle").cast(DoubleType())) \
                      .withColumn("velocity", col("velocity").cast(DoubleType())) \
-                     .withColumn("current", col("current").cast(DoubleType())) 
+                     .withColumn("current", col("current").cast(DoubleType()))
+
 
 def process_batch(batch_df, batch_id):
     # Count entries in the batch
@@ -149,36 +158,36 @@ def process_batch(batch_df, batch_id):
     
     # Filter out duplicates based on timestamp
     deduplicated_df = batch_df.dropDuplicates(["timestamp"])
-    
-    query = """
-    
-    """
 
-    # Write the DataFrame to Neo4j using the Cypher query
-    deduplicated_df.write \
-        .format("org.neo4j.spark.DataSource") \
-        .option("query", query) \
-        .mode("Overwrite") \
-        .option("url", neo4j_url) \
-        .option("authentication.basic.username", neo4j_user) \
-        .option("authentication.basic.password", neo4j_password) \
-        .save()
-    # # Write data to Neo4j
-    # deduplicated_df.write \
-    #     .format("org.neo4j.spark.DataSource") \
-    #     .mode("append") \
-    #     .option("url", neo4j_url) \
-    #     .option("authentication.basic.username", neo4j_user) \
-    #     .option("authentication.basic.password", neo4j_password) \
-    #     .option("labels", ":RobotData") \
-    #     .option("node.keys", "timestamp") \
-    #     .save()
+    try:
+        # Write the DataFrame to Neo4j using the Cypher queries
+        for write_query in [write_query1, write_query2, write_query3]:
+            deduplicated_df.write \
+                .format("org.neo4j.spark.DataSource") \
+                .option("url", neo4j_url) \
+                .option("authentication.basic.username", neo4j_user) \
+                .option("authentication.basic.password", neo4j_password) \
+                .option("query", write_query) \
+                .mode("Overwrite") \
+                .save()
+    except Exception as e:
+        logger.error("Error writing to Neo4j: {}".format(e))
+    finally:
+        logger.info("Batch {0} processing completed.".format(batch_id))
 
-# Write the parsed data to Neo4j and count entries in each batch
-query = df_parsed.writeStream \
-    .outputMode("append") \
-    .foreachBatch(process_batch) \
+# Write the parsed data to HDFS
+hdfs_query = df_parsed.writeStream \
+    .format("parquet") \
+    .option("path", "/app/staging") \
+    .option("checkpointLocation", "/app/staging_checkpoint") \
     .start()
 
-# Wait for the query to terminate
-query.awaitTermination()
+
+# Write the parsed data to Neo4j
+neo4j_query = df_parsed.writeStream \
+    .foreachBatch(process_batch) \
+    .option("checkpointLocation", "/app/neo4j_checkpoint") \
+    .start()
+
+# Wait for any of the queries to terminate
+spark.streams.awaitAnyTermination()

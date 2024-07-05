@@ -55,6 +55,7 @@ services:
     container_name: spark
     ports:
       - "8082:8082"
+      - "4040:4040"  # Expose the Spark UI port
     volumes:
       - ./:/app
     networks:
