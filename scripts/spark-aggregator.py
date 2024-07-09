@@ -1,91 +1,103 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import window, min, max, col, avg, when
-from pyspark.sql import functions as F
+from pyspark.sql.functions import window, min, max, col, avg, count
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
-from neo4j import GraphDatabase
 
 # Initialize SparkSession
 spark = SparkSession.builder \
     .appName("Streaming Aggregation and Neo4j Update") \
     .getOrCreate()
 
+neo4j_url = "bolt://host.docker.internal:7687"
+neo4j_user = "neo4j"
+neo4j_password = "12345678"
+
 # Define the schema for reading data from HDFS
 schema_read = StructType([
+    StructField("joint_name", StringType(), True),
     StructField("timestamp", TimestampType(), True),
     StructField("velocity", DoubleType(), True),
     StructField("current", DoubleType(), True),
-    StructField("position", StructType([
-        StructField("x", DoubleType(), True),
-        StructField("y", DoubleType(), True),
-        StructField("z", DoubleType(), True)
-    ]), True),
-    StructField("joint_angles", StructType([
-        StructField("joint_1", DoubleType(), True),
-        StructField("joint_2", DoubleType(), True),
-        StructField("joint_3", DoubleType(), True),
-        StructField("joint_4", DoubleType(), True),
-        StructField("joint_5", DoubleType(), True),
-        StructField("joint_6", DoubleType(), True)
-    ]), True),
+    StructField("position_x", DoubleType(), True),
+    StructField("position_y", DoubleType(), True),
+    StructField("position_z", DoubleType(), True),
     StructField("force_x", DoubleType(), True),
     StructField("force_y", DoubleType(), True),
     StructField("force_z", DoubleType(), True),
     StructField("torque_x", DoubleType(), True),
     StructField("torque_y", DoubleType(), True),
     StructField("torque_z", DoubleType(), True),
-    StructField("environment", StructType([
-        StructField("temperature", DoubleType(), True),
-        StructField("humidity", DoubleType(), True),
-        StructField("air_quality", StringType(), True)
-    ]), True),
-    StructField("log", StructType([
-        StructField("type", StringType(), True),
-        StructField("timestamp", TimestampType(), True),
-        StructField("message", StringType(), True)
-    ]), True)
+    StructField("environment_temperature", DoubleType(), True),
+    StructField("environment_humidity", StringType(), True),
+    StructField("environment_air_quality", StringType(), True),
+    StructField("log_type", StringType(), True),
+    StructField("log_timestamp", TimestampType(), True),
+    StructField("log_message", StringType(), True)
 ])
 
 # Read streaming data from HDFS
 streaming_df = spark.readStream \
     .schema(schema_read) \
     .format("parquet") \
-    .load("/app/staging")
+    .load("/app/update/staging")
 
 # Calculate min, max, and average temperatures over a 5-minute window
-result_df = streaming_df \
+result_df_log = streaming_df \
     .withWatermark("timestamp", "5 minutes") \
-    .groupBy(window("timestamp", "5 minutes")) \
-    .agg(min("environment.temperature").alias("min_temperature"), 
-         max("environment.temperature").alias("max_temperature"),
-         avg("environment.temperature").alias("avg_temperature"))
-
-result_df = result_df.withColumn(
-    "status", 
-    when(col("avg_temperature") > 30, "ALERT").otherwise("NORMAL")
+    .groupBy(window("timestamp", "5 minutes"), "log_type") \
+    .agg(
+        count("log_type").alias("log_count")
+    )
+result_df_log = result_df_log.select(
+    col("window.start").alias("window_start"),
+    col("window.end").alias("window_end"),
+    col("log_type").alias("log_type"),
+    col("log_count")
 )
 
-# Define a function to update the status in Neo4j
-def update_neo4j_status(rows):
-    neo4j_url = "bolt://host.docker.internal:7687"
-    neo4j_user = "neo4j"
-    neo4j_password = "12345678"
-    driver = GraphDatabase.driver(neo4j_url, auth=(neo4j_user, neo4j_password))
-    with driver.session() as session:
-        for row in rows:
-            start_time = row['window']['start']
-            end_time = row['window']['end']
-            status = row['status']
-            query = """
-            MATCH (t:timestamp)
-            WHERE t.timestamp >= $start_time AND t.timestamp < $end_time
-            SET t.status = $status
-            """
-            session.run(query, start_time=start_time, end_time=end_time, status=status)
+result_df_log.printSchema()
+streaming_df = streaming_df.withColumn("environment_humidity", col("environment_humidity").cast(DoubleType()))
+result_df_env = streaming_df \
+    .withWatermark("timestamp", "5 minutes") \
+    .groupBy(window("timestamp", "5 minutes")) \
+    .agg(
+        avg("environment_humidity").alias("avg_humidity")
+    )
+result_df_env = result_df_env.select(
+    col("window.start").alias("window_start"),
+    col("window.end").alias("window_end"),
+    col("avg_humidity").alias("avg_humidity"),
+)
 
-# Write the result to console and also update Neo4j
-query = result_df.writeStream \
-    .outputMode("update") \
-    .foreachBatch(lambda batch_df, batch_id: batch_df.foreach(update_neo4j_status)) \
+write_query1 = '''
+MATCH (log:Log {name: 'Log'})
+MERGE (log)-[r:HAS_LOG_SUMMARY {logType: event.log_type}]->(logSummary:LogSummary {logType: event.log_type})
+SET logSummary.count = event.log_count, logSummary.timestamp = event.window_start
+'''
+
+write_query2 = '''
+MATCH (environment:Environment {name: 'Environment'})
+MERGE (environment)-[:HAS_ENV_SUMMARY {type: 'Humidity'} ]->(environmentSummary:EnvironmentSummary)
+SET environmentSummary.avg_humidity = event.avg_humidity, environmentSummary.timestamp = event.window_start
+'''
+query = result_df_log.writeStream \
+    .format("org.neo4j.spark.DataSource") \
+    .option("url", neo4j_url) \
+    .option("authentication.basic.username", neo4j_user) \
+    .option("authentication.basic.password", neo4j_password) \
+    .option("query", write_query1) \
+    .option("save.mode", "Overwrite") \
+    .option("checkpointLocation", "/app/update/aggregatorUpdates") \
     .start()
 
+query = result_df_env.writeStream \
+    .format("org.neo4j.spark.DataSource") \
+    .option("url", neo4j_url) \
+    .option("authentication.basic.username", neo4j_user) \
+    .option("authentication.basic.password", neo4j_password) \
+    .option("query", write_query2) \
+    .option("save.mode", "Overwrite") \
+    .option("checkpointLocation", "/app/update/envUpdates") \
+    .start()
+
+query.awaitTermination()
 query.awaitTermination()

@@ -3,7 +3,9 @@
 /test/
 /staging/
 /staging_checkpoint/
+/update/
 /logs/
 /env/
 /data/*.csv
 *.csv
+airflow-webserver.pid
