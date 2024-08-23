@@ -1,11 +1,3 @@
-
-'''
-Joint Angles: Each joint should remain within its maximum range of ±360°.
-Temperature: Should remain between 0°C and 50°C.
-Humidity: Should not exceed 90% (non-condensing).
-Force and Torque: Maximum ranges should be 30 N for force and 10 Nm for torque.
-Current: 2.5 to 25 mA
-'''
 import numpy as np
 import csv
 from datetime import datetime
@@ -13,6 +5,7 @@ import time
 import os
 import json
 import rdflib
+import random
 
 def extract_constraints(ontology_path):
     g = rdflib.Graph()
@@ -55,9 +48,6 @@ def extract_constraints(ontology_path):
         if max_val is not None:
             constraints[property_name]['max'] = max_val
 
-    # Debug print to see extracted constraints
-    print("Extracted constraints:", constraints)
-    
     return constraints
 
 def generate_sensor_data(interval, constraints):
@@ -115,12 +105,20 @@ def generate_sensor_data(interval, constraints):
             }
 
             # Log type and message
-            log_type = np.random.choice(['warn', 'info', 'error'])
+            log_type = np.random.choice(['warn', 'info'], p=[0.4, 0.6])
             log_message = {
                 'warn': 'Warning log message',
-                'info': 'Info log message',
-                'error': 'Error log message'
+                'info': 'Info log message'
             }[log_type]
+
+            # Introduce errors randomly
+            if random.random() < 0.01:  # 1% chance of a spike error
+                joint_angle = random.choice([360, -360])  # Spike to extreme value
+                log_type = 'error'
+                log_message = 'Error log message'
+                force_torque['force']['x'] = constraints.get('hasForce', {}).get('max', 30) + 10  # Out-of-bounds force
+                force_torque['torque']['y'] = constraints.get('hasTorque', {}).get('max', 10) + 5  # Out-of-bounds torque
+                environment['air_quality'] = 'Unhealthy'
 
             # Package data
             sample_data = {
@@ -158,7 +156,7 @@ def generate_sensor_data(interval, constraints):
             break
 
 def main():
-    ontology_path = './ontology/sensor1_KB.ttl'
+    ontology_path = '/app/ontology/sensor1_KB.ttl'  # Directly set the correct path to the ontology file
     constraints = extract_constraints(ontology_path)
     interval_seconds = 1
     generate_sensor_data(interval_seconds, constraints)

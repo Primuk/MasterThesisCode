@@ -1,0 +1,669 @@
+{
+  "title": "Robot Arm Anomaly Detection Dashboard",
+  "version": "2.4",
+  "settings": {
+    "pagenumber": 3,
+    "editable": true,
+    "fullscreenEnabled": false,
+    "parameters": {},
+    "theme": "light",
+    "disableRowLimiting": true
+  },
+  "pages": [
+    {
+      "title": "Log Analysis",
+      "reports": [
+        {
+          "id": "d001c1af-3897-4c27-9d15-9345c6529546",
+          "title": "Error Logs Over Time",
+          "query": "// Aggregate counts of error notifications and error logs by hour in one query\nMATCH (log:Log)-[:HAS_RECORD]->(ln:LogNotification)\nWITH datetime.truncate('minute', ln.timestamp) AS minute,\n     count(DISTINCT ln) AS notificationCount\nRETURN minute, \n       notificationCount AS totalErrorCount\nORDER BY minute\n",
+          "width": 19,
+          "height": 4,
+          "x": 0,
+          "y": 0,
+          "type": "line",
+          "selection": {
+            "x": "minute",
+            "value": [
+              "totalErrorCount"
+            ]
+          },
+          "settings": {
+            "barValues": false,
+            "positionLabel": "bottom",
+            "refreshButtonEnabled": true,
+            "fullscreenEnabled": true
+          },
+          "schema": []
+        },
+        {
+          "id": "f73bc884-dea3-450b-b399-8e0d9e295628",
+          "title": "Log Notifications by Type",
+          "query": "MATCH (log:Log)-[:HAS_RECORD]->(ln:LogNotification)\nWITH ln.name AS logType, count(*) AS count\nRETURN logType, count\nORDER BY count DESC\n",
+          "width": 7,
+          "height": 4,
+          "x": 0,
+          "y": 4,
+          "type": "pie",
+          "selection": {
+            "index": "logType",
+            "value": "count",
+            "key": "(none)"
+          },
+          "settings": {
+            "colors": "accent",
+            "refreshButtonEnabled": true
+          },
+          "schema": []
+        },
+        {
+          "id": "b6bf0ea0-7f6e-4922-8cc7-6994201b60d2",
+          "title": "Average Environmental Conditions During Errors",
+          "query": "// Step 1: Collect timestamps from error logs\nMATCH (log:Log)-[:HAS_RECORD]->(errorLog:LogNotification)\nWITH collect(errorLog.timestamp) AS errorTimestamps\n\n// Step 2: Filter environment sensors by the collected timestamps\nMATCH (env:Environment)-[:HAS_READING]->(es:EnvironmentSensor)\nWHERE es.hasTimestamp IN errorTimestamps\nWITH \n    CASE \n        WHEN es.hasAirQuality = 'Good' THEN 'Good'\n        WHEN es.hasAirQuality = 'Moderate' THEN 'Moderate'\n        WHEN es.hasAirQuality = 'Unhealthy' THEN 'Unhealthy'\n        ELSE 'Other'\n    END AS airQualityCategory,\n    toFloat(es.hasHumidity) AS humidity,\n    toFloat(es.hasTemperature) AS temperature\nWITH \n    airQualityCategory,\n    count(*) AS errorCount\nRETURN \n    airQualityCategory AS category,\n    errorCount\nORDER BY category\n",
+          "width": 10,
+          "height": 4,
+          "x": 7,
+          "y": 4,
+          "type": "bar",
+          "selection": {
+            "index": "category",
+            "value": "errorCount",
+            "key": "(none)"
+          },
+          "settings": {
+            "downloadImageEnabled": true,
+            "legendPosition": "Horizontal",
+            "groupMode": "grouped",
+            "refreshButtonEnabled": true,
+            "refreshRate": 0
+          },
+          "schema": []
+        },
+        {
+          "id": "577a4aba-91c5-4c33-b53a-2ede4efc8125",
+          "title": "Time Series values of position of Joint 1",
+          "query": "MATCH (thing:Thing)-[:HAS_A]->(robot:RobotArm)-[:HAS_JOINT]->(joint:Joint {name: 'joint_1'})\nMATCH (joint)-[st:HAS_SENSOR]->(sensor:Sensor)\nWHERE coalesce(st.timestamp, sensor.hasTimestamp) <> datetime('2024-07-01T12:00:00Z')\nWITH \n    coalesce(st.timestamp, sensor.hasTimestamp) AS timestamp,\n    avg(sensor.hasPositionX) AS avgPositionX,\n    avg(sensor.hasPositionY) AS avgPositionY,\n    avg(sensor.hasPositionZ) AS avgPositionZ\nRETURN \n    timestamp,\n    avgPositionX AS positionX,\n    avgPositionY AS positionY,\n    avgPositionZ AS positionZ\nORDER BY timestamp\n",
+          "width": 24,
+          "height": 4,
+          "x": 0,
+          "y": 16,
+          "type": "line",
+          "selection": {
+            "x": "timestamp",
+            "value": [
+              "positionX",
+              "positionY"
+            ]
+          },
+          "settings": {
+            "xScale": "linear",
+            "ignoreNonDefinedParams": true,
+            "downloadImageEnabled": true,
+            "autorun": true,
+            "colors": "category10",
+            "fullscreenEnabled": true
+          },
+          "schema": []
+        },
+        {
+          "id": "f80e8cad-d6cf-4abf-810b-f5d5c2bb142b",
+          "title": "Time Series values of position of Joint 2",
+          "query": "MATCH (thing:Thing)-[:HAS_A]->(robot:RobotArm)-[:HAS_JOINT]->(joint:Joint {name: 'joint_2'})\nMATCH (joint)-[st:HAS_SENSOR]->(sensor:Sensor)\nWHERE coalesce(st.timestamp, sensor.hasTimestamp) <> datetime('2024-07-01T12:00:00Z')\nWITH \n    coalesce(st.timestamp, sensor.hasTimestamp) AS timestamp,\n    avg(sensor.hasPositionX) AS avgPositionX,\n    avg(sensor.hasPositionY) AS avgPositionY,\n    avg(sensor.hasPositionZ) AS avgPositionZ\nRETURN \n    timestamp,\n    avgPositionX AS positionX,\n    avgPositionY AS positionY,\n    avgPositionZ AS positionZ\nORDER BY timestamp\n\n\n\n",
+          "width": 24,
+          "height": 4,
+          "x": 0,
+          "y": 12,
+          "type": "line",
+          "selection": {
+            "x": "timestamp",
+            "value": [
+              "positionX",
+              "positionY"
+            ]
+          },
+          "settings": {},
+          "schema": []
+        },
+        {
+          "id": "02cfa935-c5ed-4678-9bf6-5438b73e24e6",
+          "title": "Graph",
+          "query": "MATCH p=()-[r:HAS_A|HAS_JOINT|POWERED_BY|HAS_LOGS|HAS_LOCATION*1..3]->()\nRETURN p\nLIMIT 25\n",
+          "width": 7,
+          "height": 4,
+          "x": 17,
+          "y": 4,
+          "type": "graph",
+          "selection": {
+            "Thing": "name",
+            "Environment": "name",
+            "Location": "name",
+            "PowerSupply": "name",
+            "RobotArm": "name",
+            "Joint": "name",
+            "Log": "name"
+          },
+          "settings": {
+            "ignoreNonDefinedParams": true,
+            "frozen": true,
+            "nodePositions": {
+              "58": [
+                6.3014939257350235,
+                3.950819131160733
+              ],
+              "59": [
+                -14.41048388684568,
+                10.334579043994848
+              ],
+              "60": [
+                46.927877395928824,
+                10.32130003015536
+              ],
+              "62": [
+                62.020089911623316,
+                -28.159792128484103
+              ],
+              "63": [
+                55.74734568792243,
+                31.644021072378614
+              ],
+              "64": [
+                15.372856555157556,
+                -9.977917473484405
+              ],
+              "65": [
+                -12.904581003018345,
+                36.98330498018392
+              ],
+              "66": [
+                -20.531544139560577,
+                -25.503296917326676
+              ],
+              "67": [
+                22.268459265243617,
+                13.66444012054157
+              ],
+              "68": [
+                -42.64681741373919,
+                16.975000451494804
+              ],
+              "69": [
+                5.995199572266921,
+                -24.554727555429192
+              ],
+              "76": [
+                5.650949423307447,
+                37.636882670918446
+              ],
+              "50118": [
+                -3.8084448691383592,
+                -31.708598592442158
+              ],
+              "50119": [
+                -46.5258640639183,
+                -12.386770017020112
+              ],
+              "50120": [
+                10.01469547972355,
+                -5.742493845309788
+              ],
+              "50122": [
+                33.77686790309751,
+                -6.150754604462952
+              ],
+              "50123": [
+                38.68012592807295,
+                25.61508088697513
+              ],
+              "50124": [
+                3.5009803969024524,
+                18.506026716909833
+              ],
+              "50125": [
+                -7.914588505854351,
+                34.315362531213225
+              ],
+              "50126": [
+                -26.865311142414775,
+                31.920028771931218
+              ],
+              "50127": [
+                7.138594076634547,
+                12.78418409720549
+              ],
+              "50128": [
+                -54.30724685451202,
+                14.321754145520698
+              ],
+              "50129": [
+                -37.46212494836092,
+                31.370462957086552
+              ],
+              "50136": [
+                9.928576187352856,
+                34.878512038738236
+              ],
+              "54034": [
+                10.713617067231649,
+                -1.5684700452591442
+              ],
+              "54035": [
+                -10.847970012901941,
+                6.345437854715966
+              ],
+              "54036": [
+                47.08765115977974,
+                -21.284156445663445
+              ],
+              "54038": [
+                47.392174204974346,
+                -5.066554321504629
+              ],
+              "54039": [
+                46.08357868953719,
+                21.11879849543639
+              ],
+              "54040": [
+                -10.350963827816202,
+                -22.15987469764791
+              ],
+              "54041": [
+                -27.114992683748586,
+                27.45498780716475
+              ],
+              "54042": [
+                -37.706602116158436,
+                -9.658226826052758
+              ],
+              "54043": [
+                4.434712138873515,
+                28.87871271784043
+              ],
+              "54044": [
+                -38.49836478279233,
+                13.540909772773086
+              ],
+              "54045": [
+                -24.183619242126973,
+                -21.326099764788914
+              ],
+              "54052": [
+                -11.863537451640456,
+                30.480810416724538
+              ],
+              "56757": [
+                10.713617067231649,
+                -1.5684700452591442
+              ],
+              "56758": [
+                -10.831124625194951,
+                6.31054798635653
+              ],
+              "56759": [
+                -0.8754573038863271,
+                -20.75996946791846
+              ],
+              "56761": [
+                10.961179251697935,
+                14.590457343932282
+              ],
+              "56762": [
+                -23.89538283941822,
+                -5.090550391812827
+              ],
+              "56763": [
+                20.445962389571328,
+                -14.46757182870386
+              ],
+              "56764": [
+                -8.936285783442434,
+                33.684753039392376
+              ],
+              "56765": [
+                -16.18489236510947,
+                -27.951089757340963
+              ],
+              "56766": [
+                27.452386017632154,
+                9.507660533351633
+              ],
+              "56767": [
+                -38.47117326216751,
+                13.54306642102102
+              ],
+              "56768": [
+                10.631865029918295,
+                -28.603437016514448
+              ],
+              "56775": [
+                10.085669519342762,
+                35.043421116688734
+              ],
+              "57989": [
+                10.713617067231649,
+                -1.5684700452591442
+              ],
+              "57990": [
+                -10.782029007018702,
+                6.442001454915807
+              ],
+              "57991": [
+                -0.8754573038863271,
+                -20.75996946791846
+              ],
+              "57992": [
+                10.961179251697935,
+                14.590457343932282
+              ],
+              "57993": [
+                -23.89538283941822,
+                -5.090550391812827
+              ],
+              "57994": [
+                20.073861575134597,
+                -14.154820056677833
+              ],
+              "57995": [
+                -8.717619901059669,
+                34.11049931133079
+              ],
+              "57996": [
+                -16.18489236510947,
+                -27.951089757340963
+              ],
+              "57997": [
+                28.087218336808323,
+                9.405623966013156
+              ],
+              "57998": [
+                -39.903453217741905,
+                13.277261549452572
+              ],
+              "57999": [
+                11.356430117282718,
+                -29.685743705560007
+              ],
+              "58000": [
+                9.919222055020544,
+                34.70344345220257
+              ],
+              "58006": [
+                41.151764768724604,
+                -3.3002555568206233
+              ],
+              "58007": [
+                -10.807418505364893,
+                6.283657498680135
+              ],
+              "58008": [
+                24.846695562669087,
+                27.631566547427205
+              ],
+              "58009": [
+                -40.63722485145422,
+                27.603448948954778
+              ],
+              "58010": [
+                -24.43878464637365,
+                30.76089041180127
+              ],
+              "58011": [
+                19.521572782384013,
+                -13.805811057540852
+              ],
+              "58012": [
+                -8.954714828625232,
+                33.66181404832051
+              ],
+              "58013": [
+                -16.221817296628487,
+                -28.878057802391638
+              ],
+              "58014": [
+                27.75153066781716,
+                9.508111573789225
+              ],
+              "58015": [
+                -38.44091361698884,
+                13.540727528606833
+              ],
+              "58016": [
+                10.815423274076332,
+                -28.797966246546515
+              ],
+              "58017": [
+                9.931334053328229,
+                34.83246962324878
+              ]
+            },
+            "refreshButtonEnabled": true
+          },
+          "schema": [
+            [
+              "Thing",
+              "name"
+            ],
+            [
+              "Environment",
+              "name"
+            ],
+            [
+              "Location",
+              "inBuilding",
+              "name",
+              "inWorkstation"
+            ],
+            [
+              "PowerSupply",
+              "hasVoltage",
+              "name"
+            ],
+            [
+              "RobotArm",
+              "name",
+              "hasRobotName"
+            ],
+            [
+              "Joint",
+              "hasJointType",
+              "name"
+            ],
+            [
+              "Log",
+              "name"
+            ]
+          ]
+        },
+        {
+          "id": "f82c1ee9-4037-406a-80f3-96686ae147fc",
+          "title": "",
+          "query": "\n\n\n",
+          "width": 6,
+          "height": 4,
+          "x": 0,
+          "y": 20,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "id": "b82dcd4b-6ce7-47bd-bf9c-7c51bbe4926e",
+          "title": "Total Log Nodes",
+          "query": "\n\nmatch(n:LogNotification)\nreturn count(n)\n",
+          "width": 5,
+          "height": 4,
+          "x": 19,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {},
+          "schema": []
+        }
+      ]
+    },
+    {
+      "title": "Environment Analysis",
+      "reports": [
+        {
+          "id": "2d754229-64ac-46c9-b491-03aceb937a85",
+          "title": "Environment Nodes",
+          "query": "\nmatch(n:EnvironmentSensor)\nreturn count(n)\n\n",
+          "width": 6,
+          "height": 2,
+          "x": 0,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {
+            "refreshButtonEnabled": true
+          },
+          "schema": []
+        },
+        {
+          "id": "bbda5278-362f-4c10-b079-f8b88fd314c5",
+          "title": "Humidity with time",
+          "query": "MATCH (env:Environment)-[:HAS_READING]->(sensor:EnvironmentSensor)\nWITH datetime(sensor.hasTimestamp) AS timestamp, \n     sensor.hasHumidity AS Humidity\nRETURN timestamp, Humidity\nORDER BY timestamp\nLIMIT 1000\n",
+          "width": 18,
+          "height": 3,
+          "x": 6,
+          "y": 0,
+          "type": "line",
+          "selection": {
+            "x": "timestamp",
+            "value": [
+              "Humidity"
+            ]
+          },
+          "settings": {
+            "refreshButtonEnabled": true
+          },
+          "schema": []
+        },
+        {
+          "id": "8c6a24e1-aa3d-4208-9567-cd576ab3dcbe",
+          "title": "",
+          "query": "\n\n\n",
+          "width": 6,
+          "height": 4,
+          "x": 0,
+          "y": 2,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "id": "1a6ca7f9-b903-4d34-b78e-02b11ac4240f",
+          "title": "Air quality with time",
+          "query": "MATCH (env:Environment)-[:HAS_READING]->(sensor:EnvironmentSensor)\nWITH datetime(sensor.hasTimestamp) AS timestamp, \n     CASE sensor.hasAirQuality\n       WHEN 'Good' THEN 1\n       WHEN 'Moderate' THEN 2\n       WHEN 'Unhealthy' THEN 3\n       ELSE 0 // Default value if the air quality is unknown or null\n     END AS AirQualityLevel\nRETURN timestamp, AirQualityLevel\nORDER BY timestamp\nLIMIT 1000\n\n\n\n",
+          "width": 18,
+          "height": 3,
+          "x": 6,
+          "y": 3,
+          "type": "line",
+          "selection": {
+            "x": "timestamp",
+            "value": [
+              "AirQualityLevel"
+            ]
+          },
+          "settings": {
+            "refreshButtonEnabled": true
+          },
+          "schema": []
+        }
+      ]
+    },
+    {
+      "title": "Joint Analysis",
+      "reports": [
+        {
+          "id": "9eab13ff-6c57-472b-852d-9ff0db5a5b35",
+          "title": "Joint Sensor Nodes",
+          "query": "match(n:Sensor)\nreturn count(n)\n\n\n",
+          "width": 5,
+          "height": 4,
+          "x": 0,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {},
+          "schema": []
+        },
+        {
+          "id": "0d7b52fe-d01d-4bea-a47b-d371946b925a",
+          "title": "Time Series values of position of Joint 1",
+          "query": "MATCH (thing:Thing)-[:HAS_A]->(robot:RobotArm)-[:HAS_JOINT]->(joint:Joint {name: 'joint_1'})\nMATCH (joint)-[st:HAS_SENSOR]->(sensor:Sensor)\nWHERE coalesce(st.timestamp, sensor.hasTimestamp) <> datetime('2024-07-01T12:00:00Z')\nWITH \n    coalesce(st.timestamp, sensor.hasTimestamp) AS timestamp,\n    avg(sensor.hasPositionX) AS avgPositionX,\n    avg(sensor.hasPositionY) AS avgPositionY,\n    avg(sensor.hasPositionZ) AS avgPositionZ\nRETURN \n    timestamp,\n    avgPositionX AS positionX,\n    avgPositionY AS positionY,\n    avgPositionZ AS positionZ\nORDER BY timestamp\n\n\n\n",
+          "width": 19,
+          "height": 4,
+          "x": 5,
+          "y": 0,
+          "type": "line",
+          "selection": {
+            "x": "timestamp",
+            "value": [
+              "positionX",
+              "positionY"
+            ]
+          },
+          "settings": {},
+          "schema": []
+        },
+        {
+          "id": "c1f31271-e3fa-4b06-8ff1-8ff4a8e91061",
+          "title": "Time Series values of position of Joint 2",
+          "query": "MATCH (thing:Thing)-[:HAS_A]->(robot:RobotArm)-[:HAS_JOINT]->(joint:Joint {name: 'joint_2'})\nMATCH (joint)-[st:HAS_SENSOR]->(sensor:Sensor)\nWHERE coalesce(st.timestamp, sensor.hasTimestamp) <> datetime('2024-07-01T12:00:00Z')\nWITH \n    coalesce(st.timestamp, sensor.hasTimestamp) AS timestamp,\n    avg(sensor.hasPositionX) AS avgPositionX,\n    avg(sensor.hasPositionY) AS avgPositionY,\n    avg(sensor.hasPositionZ) AS avgPositionZ\nRETURN \n    timestamp,\n    avgPositionX AS positionX,\n    avgPositionY AS positionY,\n    avgPositionZ AS positionZ\nORDER BY timestamp",
+          "width": 24,
+          "height": 4,
+          "x": 0,
+          "y": 4,
+          "type": "line",
+          "selection": {
+            "x": "timestamp",
+            "value": [
+              "positionX",
+              "positionY"
+            ]
+          },
+          "settings": {},
+          "schema": []
+        }
+      ]
+    },
+    {
+      "title": "Health Monitor",
+      "reports": [
+        {
+          "id": "68a56014-c81c-4645-9870-4b0e9542d24e",
+          "title": "Software Error Log",
+          "query": "\nmatch(n:LogNotification) where n.name='error'\nreturn count(n)\n\n",
+          "width": 5,
+          "height": 2,
+          "x": 0,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {},
+          "schema": []
+        },
+        {
+          "id": "8d2aee03-1712-43c5-a91d-245befde867a",
+          "title": "",
+          "query": "\n\n\n",
+          "width": 6,
+          "height": 4,
+          "x": 5,
+          "y": 0,
+          "type": "value",
+          "selection": {},
+          "settings": {},
+          "schema": []
+        }
+      ]
+    }
+  ],
+  "parameters": {},
+  "extensions": {
+    "active": true,
+    "activeReducers": []
+  },
+  "uuid": "4561988f-8273-4a35-b0f0-98e512e7c699"
+}

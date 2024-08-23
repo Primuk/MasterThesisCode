@@ -6,8 +6,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @base <http://example.org/robotics#> .
 
-[ rdf:type owl:Ontology
- ] .
+[ rdf:type owl:Ontology ] .
 
 #################################################################
 #    Object Properties
@@ -19,40 +18,35 @@
           rdfs:domain :RobotArm ;
           rdfs:range :Joint ;
           rdfs:comment "Relates a robot arm to its joints." ;
-          rdfs:label "hasJoint" .
-
+          rdfs:label "has joint" .
 
 ###  http://example.org/robotics#hasLocation
 :hasLocation rdf:type owl:ObjectProperty ;
              rdfs:domain :RobotArm ;
              rdfs:range :Location ;
              rdfs:comment "Specifies the location of the robot arm." ;
-             rdfs:label "hasLocation" .
-
+             rdfs:label "has location" .
 
 ###  http://example.org/robotics#hasSensor
 :hasSensor rdf:type owl:ObjectProperty ;
            rdfs:domain :Joint ;
            rdfs:range :Sensor ;
            rdfs:comment "Relates a joint to its sensors." ;
-           rdfs:label "hasSensor" .
-
+           rdfs:label "has sensor" .
 
 ###  http://example.org/robotics#monitoredBy
 :monitoredBy rdf:type owl:ObjectProperty ;
              rdfs:domain :EnvironmentSensor ;
              rdfs:range :Environment ;
              rdfs:comment "Relates an environment sensor to the environment it monitors." ;
-             rdfs:label "monitoredBy" .
-
+             rdfs:label "monitored by" .
 
 ###  http://example.org/robotics#poweredBy
 :poweredBy rdf:type owl:ObjectProperty ;
            rdfs:domain :RobotArm ;
            rdfs:range :PowerSupply ;
            rdfs:comment "Specifies the power supply for the robot arm." ;
-           rdfs:label "poweredBy" .
-
+           rdfs:label "powered by" .
 
 ###  http://example.org/robotics#records
 :records rdf:type owl:ObjectProperty ;
@@ -60,7 +54,6 @@
          rdfs:range :Log ;
          rdfs:comment "Relates a sensor to the logs it records." ;
          rdfs:label "records" .
-
 
 #################################################################
 #    Data properties
@@ -71,143 +64,125 @@
                  rdfs:domain :Sensor ;
                  rdfs:range xsd:float ;
                  rdfs:comment "Records the acceleration measured by the acceleration sensor." ;
-                 rdfs:label "hasAcceleration" .
-
+                 rdfs:label "has acceleration" .
 
 ###  http://example.org/robotics#hasAirQuality
 :hasAirQuality rdf:type owl:DatatypeProperty ;
                rdfs:domain :AirQualitySensor ;
                rdfs:range xsd:string ;
                rdfs:comment "Records the air quality measured by the air quality sensor." ;
-               rdfs:label "hasAirQuality" .
-
+               rdfs:label "has air quality" .
 
 ###  http://example.org/robotics#hasCurrent
 :hasCurrent rdf:type owl:DatatypeProperty ;
             rdfs:domain :Sensor ;
             rdfs:range xsd:float ;
             rdfs:comment "Specifies the current of the power supply." ;
-            rdfs:label "hasCurrent" .
-
+            rdfs:label "has current" .
 
 ###  http://example.org/robotics#hasForce
 :hasForce rdf:type owl:DatatypeProperty ;
           rdfs:domain :Sensor ;
           rdfs:range xsd:float ;
           rdfs:comment "Records the force measured by the force/torque sensor." ;
-          rdfs:label "hasForce" .
-
+          rdfs:label "has force" .
 
 ###  http://example.org/robotics#hasHumidity
 :hasHumidity rdf:type owl:DatatypeProperty ;
              rdfs:domain :HumiditySensor ;
              rdfs:range xsd:float ;
              rdfs:comment "Records the humidity measured by the humidity sensor." ;
-             rdfs:label "hasHumidity" .
-
+             rdfs:label "has humidity" .
 
 ###  http://example.org/robotics#hasJointType
 :hasJointType rdf:type owl:DatatypeProperty ;
               rdfs:range xsd:string ;
               rdfs:comment "Specifies the type of reading for the joint." ;
-              rdfs:label "hasJointType" .
-
+              rdfs:label "has joint type" .
 
 ###  http://example.org/robotics#hasMessage
 :hasMessage rdf:type owl:DatatypeProperty ;
             rdfs:domain :Log ;
             rdfs:range xsd:string ;
             rdfs:comment "Specifies the message of the log." ;
-            rdfs:label "hasMessage" .
-
+            rdfs:label "has message" .
 
 ###  http://example.org/robotics#hasPositionX
 :hasPositionX rdf:type owl:DatatypeProperty ;
               rdfs:domain :Sensor ;
               rdfs:range xsd:float ;
               rdfs:comment "Records the X-coordinate of the position measured by the position sensor." ;
-              rdfs:label "hasPositionX" .
-
+              rdfs:label "has position X" .
 
 ###  http://example.org/robotics#hasPositionY
 :hasPositionY rdf:type owl:DatatypeProperty ;
               rdfs:domain :Sensor ;
               rdfs:range xsd:float ;
               rdfs:comment "Records the Y-coordinate of the position measured by the position sensor." ;
-              rdfs:label "hasPositionY" .
-
+              rdfs:label "has position Y" .
 
 ###  http://example.org/robotics#hasPositionZ
 :hasPositionZ rdf:type owl:DatatypeProperty ;
               rdfs:domain :Sensor ;
               rdfs:range xsd:float ;
               rdfs:comment "Records the Z-coordinate of the position measured by the position sensor." ;
-              rdfs:label "hasPositionZ" .
-
+              rdfs:label "has position Z" .
 
 ###  http://example.org/robotics#hasRobotName
 :hasRobotName rdf:type owl:DatatypeProperty ;
               rdfs:domain :RobotArm ;
               rdfs:range xsd:string ;
-              rdfs:comment "Specifies the name of robot Arm." ;
-              rdfs:label "hasRobotName" .
-
+              rdfs:comment "Specifies the name of the robot arm." ;
+              rdfs:label "has robot name" .
 
 ###  http://example.org/robotics#hasTemperature
 :hasTemperature rdf:type owl:DatatypeProperty ;
                 rdfs:domain :TemperatureSensor ;
                 rdfs:range xsd:float ;
                 rdfs:comment "Records the temperature measured by the temperature sensor." ;
-                rdfs:label "hasTemperature" .
-
+                rdfs:label "has temperature" .
 
 ###  http://example.org/robotics#hasTimestamp
 :hasTimestamp rdf:type owl:DatatypeProperty ;
               rdfs:domain :Log ;
               rdfs:range xsd:dateTime ;
               rdfs:comment "Specifies the timestamp of the log." ;
-              rdfs:label "hasTimestamp" .
-
+              rdfs:label "has timestamp" .
 
 ###  http://example.org/robotics#hasTorque
 :hasTorque rdf:type owl:DatatypeProperty ;
            rdfs:domain :Sensor ;
            rdfs:range xsd:float ;
            rdfs:comment "Records the torque measured by the force/torque sensor." ;
-           rdfs:label "hasTorque" .
-
+           rdfs:label "has torque" .
 
 ###  http://example.org/robotics#hasVelocity
 :hasVelocity rdf:type owl:DatatypeProperty ;
              rdfs:domain :Sensor ;
              rdfs:range xsd:float ;
              rdfs:comment "Records the velocity measured by the velocity sensor." ;
-             rdfs:label "hasVelocity" .
-
+             rdfs:label "has velocity" .
 
 ###  http://example.org/robotics#hasVoltage
 :hasVoltage rdf:type owl:DatatypeProperty ;
             rdfs:domain :PowerSupply ;
             rdfs:range xsd:float ;
             rdfs:comment "Specifies the voltage of the power supply." ;
-            rdfs:label "hasVoltage" .
-
+            rdfs:label "has voltage" .
 
 ###  http://example.org/robotics#inBuilding
 :inBuilding rdf:type owl:DatatypeProperty ;
             rdfs:domain :Location ;
             rdfs:range xsd:string ;
             rdfs:comment "Specifies the building name where the location is situated." ;
-            rdfs:label "inBuilding" .
-
+            rdfs:label "in building" .
 
 ###  http://example.org/robotics#inWorkstation
 :inWorkstation rdf:type owl:DatatypeProperty ;
                rdfs:domain :Location ;
                rdfs:range xsd:string ;
                rdfs:comment "Specifies the workstation identifier within a building." ;
-               rdfs:label "inWorkstation" .
-
+               rdfs:label "in workstation" .
 
 #################################################################
 #    Classes
@@ -215,73 +190,72 @@
 
 ###  http://example.org/robotics#AirQualitySensor
 :AirQualitySensor rdf:type owl:Class ;
-                  rdfs:subClassOf :EnvironmentSensor .
-
+                  rdfs:subClassOf :EnvironmentSensor ;
+                  rdfs:label "Air Quality Sensor" .
 
 ###  http://example.org/robotics#Environment
-:Environment rdf:type owl:Class .
-
+:Environment rdf:type owl:Class ;
+             rdfs:label "Environment" .
 
 ###  http://example.org/robotics#EnvironmentSensor
 :EnvironmentSensor rdf:type owl:Class ;
                    rdfs:subClassOf :Environment ;
                    rdfs:comment "An environmental sensor that monitors environmental conditions." ;
-                   rdfs:label "EnvironmentSensor" .
-
+                   rdfs:label "Environment Sensor" .
 
 ###  http://example.org/robotics#ErrorLog
 :ErrorLog rdf:type owl:Class ;
-          rdfs:subClassOf :Log .
-
+          rdfs:subClassOf :Log ;
+          rdfs:label "Error Log" .
 
 ###  http://example.org/robotics#HumiditySensor
 :HumiditySensor rdf:type owl:Class ;
-                rdfs:subClassOf :EnvironmentSensor .
-
+                rdfs:subClassOf :EnvironmentSensor ;
+                rdfs:label "Humidity Sensor" .
 
 ###  http://example.org/robotics#InfoLog
 :InfoLog rdf:type owl:Class ;
-         rdfs:subClassOf :Log .
-
+         rdfs:subClassOf :Log ;
+         rdfs:label "Info Log" .
 
 ###  http://example.org/robotics#Joint
 :Joint rdf:type owl:Class ;
-       rdfs:subClassOf :RobotArm .
-
+       rdfs:subClassOf :RobotArm ;
+       rdfs:label "Joint" .
 
 ###  http://example.org/robotics#Location
 :Location rdf:type owl:Class ;
-          rdfs:subClassOf :Environment .
-
+          rdfs:subClassOf :Environment ;
+          rdfs:label "Location" .
 
 ###  http://example.org/robotics#Log
 :Log rdf:type owl:Class ;
-     rdfs:subClassOf :RobotArm .
-
+     rdfs:subClassOf :RobotArm ;
+     rdfs:label "Log" .
 
 ###  http://example.org/robotics#PowerSupply
 :PowerSupply rdf:type owl:Class ;
-             rdfs:subClassOf :Location .
-
+             rdfs:subClassOf :Location ;
+             rdfs:label "Power Supply" .
 
 ###  http://example.org/robotics#RobotArm
-:RobotArm rdf:type owl:Class .
-
+:RobotArm rdf:type owl:Class ;
+          rdfs:label "Robot Arm" .
 
 ###  http://example.org/robotics#Sensor
 :Sensor rdf:type owl:Class ;
-        rdfs:subClassOf :Joint .
-
+        rdfs:subClassOf :Joint ;
+        rdfs:label "Sensor" .
 
 ###  http://example.org/robotics#TemperatureSensor
 :TemperatureSensor rdf:type owl:Class ;
-                   rdfs:subClassOf :EnvironmentSensor .
-
+                   rdfs:subClassOf :EnvironmentSensor ;
+                   rdfs:label "Temperature Sensor" .
 
 ###  http://example.org/robotics#WarnLog
 :WarnLog rdf:type owl:Class ;
-         rdfs:subClassOf :Log .
-
+         rdfs:subClassOf :Log ;
+         rdfs:label "Warn Log" .
 
 #################################################################
 #    Restrictions
@@ -293,10 +267,9 @@
            rdf:type owl:Restriction ;
            owl:onProperty :hasJointAngle ;
            owl:allValuesFrom [
-               rdf:type rdfs:Datatype ;
-               owl:onDatatype xsd:float ;
+               rdf:type xsd:float ;
                owl:withRestrictions (
-                   [ xsd:minInclusive "-360" ]
+                   [ xsd:minInclusive "−360" ] 
                    [ xsd:maxInclusive "360" ]
                )
            ]
@@ -308,8 +281,7 @@
                        rdf:type owl:Restriction ;
                        owl:onProperty :hasTemperature ;
                        owl:allValuesFrom [
-                           rdf:type rdfs:Datatype ;
-                           owl:onDatatype xsd:float ;
+                           rdf:type xsd:float ;
                            owl:withRestrictions (
                                [ xsd:minInclusive "0" ]
                                [ xsd:maxInclusive "50" ]
@@ -323,10 +295,9 @@
                     rdf:type owl:Restriction ;
                     owl:onProperty :hasHumidity ;
                     owl:allValuesFrom [
-                        rdf:type rdfs:Datatype ;
-                        owl:onDatatype xsd:float ;
+                        rdf:type xsd:float ;
                         owl:withRestrictions (
-                            [ xsd:minInclusive "0" ]   # Add minInclusive to be consistent
+                            [ xsd:minInclusive "0" ]
                             [ xsd:maxInclusive "90" ]
                         )
                     ]
@@ -338,10 +309,9 @@
             rdf:type owl:Restriction ;
             owl:onProperty :hasForce ;
             owl:allValuesFrom [
-                rdf:type rdfs:Datatype ;
-                owl:onDatatype xsd:float ;
+                rdf:type xsd:float ;
                 owl:withRestrictions (
-                    [ xsd:minInclusive "0" ]   # Add minInclusive to be consistent
+                    [ xsd:minInclusive "0" ]
                     [ xsd:maxInclusive "30" ]
                 )
             ]
@@ -350,10 +320,9 @@
             rdf:type owl:Restriction ;
             owl:onProperty :hasTorque ;
             owl:allValuesFrom [
-                rdf:type rdfs:Datatype ;
-                owl:onDatatype xsd:float ;
+                rdf:type xsd:float ;
                 owl:withRestrictions (
-                    [ xsd:minInclusive "0" ]   # Add minInclusive to be consistent
+                    [ xsd:minInclusive "0" ]
                     [ xsd:maxInclusive "10" ]
                 )
             ]
@@ -365,8 +334,7 @@
             rdf:type owl:Restriction ;
             owl:onProperty :hasCurrent ;
             owl:allValuesFrom [
-                rdf:type rdfs:Datatype ;
-                owl:onDatatype xsd:float ;
+                rdf:type xsd:float ;
                 owl:withRestrictions (
                     [ xsd:minInclusive "2.5" ]
                     [ xsd:maxInclusive "25" ]

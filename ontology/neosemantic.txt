@@ -1,0 +1,11 @@
+CALL n10s.graphconfig.init();
+CALL n10s.rdf.import.fetch("file:///C:/Users/primu/Desktop/Master%20Thesis/data-streams/knowledgestream/MasterThesisCode/ontology/sensor1_KB.ttl", "Turtle");
+CALL n10s.graphconfig.init({
+  handleVocabUris: 'MAP'
+})
+
+MATCH (c:Resource)-[:rdfs__subClassOf]->(sc:Resource)
+WHERE c:`owl__Class` AND sc:`owl__Class`
+RETURN c AS Class, sc AS Subclass
+LIMIT 100
+

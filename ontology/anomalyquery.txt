@@ -1,0 +1,69 @@
+MATCH (thing:Thing)-[:HAS_A]->(robot:RobotArm)-[:HAS_LOGS]->(log:Log)
+MATCH (log)-[:HAS_RECORD]->(ln:LogNotification)
+MATCH (thing)-[:HAS_A]->(env:Environment)-[:HAS_READING]->(es:EnvironmentSensor)
+WHERE ln.name = 'error' AND ln.timestamp = es.hasTimestamp AND es.hasAirQuality='Unhealthy'
+RETURN thing, robot, log, ln, env, es
+LIMIT 1
+---------------------------------------------------------------------------------------
+MATCH (log:Log)-[:HAS_RECORD]->(ln:LogNotification {name: 'error'})
+RETURN datetime.truncate('hour', ln.timestamp) AS hour, 
+       count(ln) AS errorCount
+ORDER BY hour
+-------------------------------------------------------------------------------------
+MATCH (log:Log)-[:HAS_RECORD]->(ln:LogNotification)
+WITH ln.name AS logType, count(*) AS count
+RETURN logType, count
+ORDER BY count DESC
+--------------------------------------------------------------------------------------
+MATCH (thing:Thing)-[:HAS_A]->(env:Environment)-[:HAS_READING]->(es:EnvironmentSensor)
+WITH 
+    CASE 
+        WHEN es.hasAirQuality = 'Good' THEN 'Good'
+        WHEN es.hasAirQuality = 'Moderate' THEN 'Moderate'
+        WHEN es.hasAirQuality = 'Unhealthy' THEN 'Unhealthy'
+    ELSE 'Other'  // Catch-all for unexpected values
+    END AS airQualityCategory,
+    toFloat(es.hasHumidity) AS humidity,
+    toFloat(es.hasTemperature) AS temperature
+WITH 
+    airQualityCategory,
+    avg(humidity) AS avgHumidity,
+    avg(temperature) AS avgTemperature
+RETURN 
+    airQualityCategory AS category,
+    avgHumidity,
+    avgTemperature
+-----------------------------------------------------------------------------------------
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+MATCH (thing:Thing)-[:HAS_A]->(robot:RobotArm)-[:HAS_JOINT]->(joint:Joint)
+MATCH (joint)-[:HAS_SENSOR]->(sensor:Sensor)
+MATCH (robot)-[:HAS_LOGS]->(log:Log)
+MATCH (log)-[:HAS_RECORD]->(ln:LogNotification {name: 'error'})
+WHERE sensor.hasTimestamp = ln.timestamp
+RETURN 
+    ln.timestamp AS logTimestamp,
+    ln.hasMessage AS logMessage,
+    joint.name AS jointName,
+    sensor.hasAcceleration AS acceleration,
+    sensor.hasCurrent AS current,
+    sensor.hasForce AS force,
+    sensor.hasPositionX AS positionX,
+    sensor.hasPositionY AS positionY,
+    sensor.hasPositionZ AS positionZ
+ORDER BY logTimestam
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// Step 1: Collect error log timestamps
+MATCH (log:Log)-[:HAS_RECORD]->(errorLog:ErrorLog)
+WITH collect(errorLog.hasTimestamp) AS errorTimestamps
+
+// Step 2: Create EnvironmentSensor nodes with "Unhealthy" air quality at the same timestamps
+UNWIND errorTimestamps AS ts
+MERGE (env:Environment {name: 'Environment'})
+MERGE (es:EnvironmentSensor {hasTimestamp: ts})
+SET 
+    es.hasAirQuality='Unhealthy',
+    es.hasHumidity = rand() * 100,   // Random humidity between 0 and 100
+    es.hasTemperature = 15 + rand() * 10  // Random temperature between 15 and 25
+MERGE (env)-[:HAS_READING]->(es)
+RETURN es
+-------------------------------------------------------------------------------

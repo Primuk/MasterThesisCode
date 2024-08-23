@@ -6,7 +6,8 @@ from kafka import KafkaProducer
 from kafka.admin import KafkaAdminClient, NewTopic
 
 admin_client = KafkaAdminClient(bootstrap_servers="172.25.0.12:9092")
-producer = KafkaProducer(bootstrap_servers='172.25.0.13:9092', value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+producer = KafkaProducer(bootstrap_servers='172.25.0.13:9092', 
+                         value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
 TOPIC_NAME = 'ROBOT_STREAM_ONTO'
 
