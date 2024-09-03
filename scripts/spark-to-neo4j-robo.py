@@ -130,6 +130,8 @@ df_parsed = df_parsed.withColumn("environment_air_quality", F.col("environment.a
 
 # Drop the original environment column
 df_parsed = df_parsed.drop("environment")
+
+
 write_query1 = '''MATCH (log:Log {name: 'Log'}) MERGE (wl:LogNotification {name: event.log_type,timestamp: datetime(event.timestamp)}) ON CREATE SET wl.hasMessage = event.log_message MERGE (log)-[:HAS_RECORD {timestamp: datetime(event.timestamp)}]->(wl)'''
 
 write_query2 = '''MERGE (s:Sensor {timestamp: datetime(event.timestamp)}) ON CREATE SET s.hasAcceleration = event.joint_angle, s.hasCurrent = event.current, s.hasForceX = event.force_x, s.hasForceY = event.force_y, s.hasForceZ = event.force_z, s.hasPositionX = event.position_x, s.hasPositionY = event.position_y, s.hasPositionZ = event.position_z, s.hasTorqueX = event.torque_x, s.hasTorqueY = event.torque_y, s.hasTorqueZ = event.torque_z, s.hasVelocity = event.velocity MERGE (j:Joint {name: event.joint_name}) MERGE (j)-[r:HAS_SENSOR]->(s) ON CREATE SET r.timestamp = datetime(event.timestamp)'''
@@ -150,6 +152,8 @@ df_parsed = df_parsed.withColumn("timestamp", col("timestamp").cast(TimestampTyp
                      .withColumn("velocity", col("velocity").cast(DoubleType())) \
                      .withColumn("current", col("current").cast(DoubleType()))
 
+# Repartition the DataFrame based on 'joint_name'
+df_partitioned = df_parsed.repartition("joint_name")
 
 def process_batch(batch_df, batch_id):
     # Count entries in the batch
@@ -168,6 +172,7 @@ def process_batch(batch_df, batch_id):
                 .option("authentication.basic.username", neo4j_user) \
                 .option("authentication.basic.password", neo4j_password) \
                 .option("query", write_query) \
+                .option("batch.size", "10000") \
                 .mode("Overwrite") \
                 .save()
     except Exception as e:

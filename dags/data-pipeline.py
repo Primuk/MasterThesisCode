@@ -52,6 +52,13 @@ hdfs_to_neo4j_command =  'spark-submit \
     --driver-class-path /app/kafka-clients-2.2.0.jar \
     /app/scripts/spark-aggregator.py'
 
+# Introduce a 1-minute delay using the sleep command
+delay_task = BashOperator(
+    task_id='delay_before_aggregation',
+    bash_command='sleep 500',
+    dag=dag,
+    xcom_push=False
+)
 
 aggregation_task = BashOperator(
     task_id='aggregation_task_to_neo4j',
@@ -61,5 +68,5 @@ aggregation_task = BashOperator(
 )
 
 # Set task dependencies
-deploy_task >> [ingestion_task, aggregation_task]
-#deploy_task >> [ingestion_task]
+deploy_task >> delay_task >> aggregation_task
+deploy_task >> ingestion_task

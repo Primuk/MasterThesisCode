@@ -14,7 +14,7 @@ TOPIC_NAME = 'ROBOT_STREAM_ONTO'
 existing_topics = admin_client.list_topics()
 
 if TOPIC_NAME not in existing_topics:
-    topic_list = [NewTopic(name=TOPIC_NAME, num_partitions=1, replication_factor=1)]
+    topic_list = [NewTopic(name=TOPIC_NAME, num_partitions=6, replication_factor=1)]
     admin_client.create_topics(new_topics=topic_list, validate_only=False)
 
 start_time = datetime.datetime.now()
@@ -24,9 +24,10 @@ while elapsed_time < datetime.timedelta(minutes=20):
     with open('../data/robot_sensor_data_validated.csv', 'r') as file:
         reader = csv.DictReader(file)
         for row in reader:
-            producer.send(TOPIC_NAME, value=row)
+            key = row['joint_name'].encode('utf-8')  
+            producer.send(TOPIC_NAME, key=key, value=row)
             producer.flush()
-        time.sleep(5)  # Waits for 5 seconds to read new data
+        time.sleep(2)  # Waits for 5 seconds to read new data
         elapsed_time = datetime.datetime.now() - start_time
 
 producer.close()
