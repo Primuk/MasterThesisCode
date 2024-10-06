@@ -1,0 +1,97 @@
+
+
+Data Extraction: 3.86 seconds.
+Data Transformation: 1.99 seconds.
+Time Now:2024-09-05 11:33:56 ,Timestamp: 2024-09-05T11:33:56.399981, Data: {'force_torque': '{"force": {"y": 0.0, "z": 0.0, "x": 10.0}, "torque": {"y": 0.0, "z": 0.0, "x": 0.0}}', 'current': '2.5', 'timestamp': '2024-09-05T11:33:56.399981', 'position': '{"y": 0.0, "z": 0.0, "x": 1.0}', 'sensor_name': 'joint_1_sensor', 'joint_angle': '0.0', 'velocity': '0.1', 'environment': '{"air_quality": "Good", "humidity": 50.0, "temperature": 25.0}', 'joint_name': 'joint_1', 'log': '{"timestamp": "2024-09-05T11:29:59Z", "type": "info", "message": "Info log message"}'}
+Data Loading: query processing time per record in secs: 3.930045962333679.
+Batch 6 processed in 14.03 seconds.
+Data Loading: query processing time per record in secs: 0.0323343870277229.
+Batch 7 processed in 14.60 seconds.
+Data Loading: query processing time per record in secs: 0.025930179372350447.
+Batch 8 processed in 14.06 seconds.
+Data Loading: query processing time per record in secs: 0.020033889686280167.
+Batch 9 processed in 14.69 seconds.
+Data Loading: query processing time per record in secs: 0.021233923517899708.
+Batch 10 processed in 17.54 seconds.
+Data Loading: query processing time per record in secs: 0.019642531671556086.
+Batch 11 processed in 17.81 seconds.
+Data Loading: query processing time per record in secs: 0.01745855691386204.
+Batch 12 processed in 19.86 seconds.
+Data Loading: query processing time per record in secs: 0.019984112419113065.
+Batch 13 processed in 21.17 seconds.
+Data Loading: query processing time per record in secs: 0.017048782388561206.
+Batch 14 processed in 28.69 seconds.
+Data Loading: query processing time per record in secs: 0.018641038247716357.
+Batch 15 processed in 32.29 seconds.
+Data Loading: query processing time per record in secs: 0.017676319264295522.
+Batch 16 processed in 9.83 seconds.
+Data Loading: query processing time per record in secs: 0.27300071716308594.
+Data Extraction: 6.23.
+Data Transformation: 3.19.
+Time Now:2024-09-05 19:28:48 ,Timestamp: 2024-09-05T19:28:48.586362, Data: {'force_torque': '{"force": {"y": 0.0, "z": 0.0, "x": 10.0}, "torque": {"y": 0.0, "z": 0.0, "x": 0.0}}', 'current': '2.5', 'timestamp': '2024-09-05T19:28:48.586362', 'position': '{"y": 0.0, "z": 0.0, "x": 1.0}', 'sensor_name': 'joint_1_sensor', 'joint_angle': '0.0', 'velocity': '0.1', 'environment': '{"air_quality": "Good", "humidity": 50.0, "temperature": 25.0}', 'joint_name': 'joint_1', 'log': '{"timestamp": "2024-09-05T11:29:59Z", "type": "info", "message": "Info log message"}'}
+Batch 17 processed in 59.41 seconds.
+Data Loading: query processing time per record in secs: 59.41012454032898.
+Batch 18 processed in 175.27 seconds.
+Data Loading: query processing time per record in secs: 0.03788702687916176.
+Time Now:2024-09-06 02:19:28 ,Timestamp: 2024-09-06T02:19:28.794998, Data: {'force_torque': '{"force": {"y": 0.0, "z": 0.0, "x": 10.0}, "torque": {"y": 0.0, "z": 0.0, "x": 0.0}}', 'current': '2.5', 'timestamp': '2024-09-06T02:19:28.794998', 'position': '{"y": 0.0, "z": 0.0, "x": 1.0}', 'sensor_name': 'joint_1_sensor', 'joint_angle': '0.0', 'velocity': '0.1', 'environment': '{"air_quality": "Good", "humidity": 50.0, "temperature": 25.0}', 'joint_name': 'joint_1', 'log': '{"timestamp": "2024-09-05T11:29:59Z", "type": "info", "message": "Info log message"}'}
+Data Extraction: 1.84.
+Time Now:2024-09-06 09:05:46 ,Timestamp: 2024-09-06T09:05:46.174899, Data: {'force_torque': '{"force": {"y": 0.0, "z": 0.0, "x": 10.0}, "torque": {"y": 0.0, "z": 0.0, "x": 0.0}}', 'current': '2.5', 'timestamp': '2024-09-06T09:05:46.174899', 'position': '{"y": 0.0, "z": 0.0, "x": 1.0}', 'sensor_name': 'joint_1_sensor', 'joint_angle': '0.0', 'velocity': '0.1', 'environment': '{"air_quality": "Unhealthy", "humidity": 50.0, "temperature": 25.0}', 'joint_name': 'joint_1', 'log': '{"timestamp": "2024-09-06T09:05:45Z", "type": "info", "message": "Info log message"}'}
+Data Transformation: 1.19.
+Batch 0 processed in 13.64 seconds.
+Batch 1 processed in 9.61 seconds.
+Data Loading: query processing time per record in secs: 0.09803517254031434.
+Batch 2 processed in 8.50 seconds.
+Data Loading: query processing time per record in secs: 0.08499049186706543.
+Batch 3 processed in 8.42 seconds.
+Data Loading: query processing time per record in secs: 0.06240088321544506.
+Batch 4 processed in 8.88 seconds.
+Data Loading: query processing time per record in secs: 0.04354682856915044.
+Batch 5 processed in 8.63 seconds.
+Data Loading: query processing time per record in secs: 0.039056988323436063.
+Batch 6 processed in 6.04 seconds.
+Data Loading: query processing time per record in secs: 0.024359535786413377.
+Batch 7 processed in 8.22 seconds.
+Data Loading: query processing time per record in secs: 0.03914469537280855.
+Batch 8 processed in 8.72 seconds.
+Data Loading: query processing time per record in secs: 0.03790928073551344.
+Batch 9 processed in 9.96 seconds.
+Data Loading: query processing time per record in secs: 0.02921933862121224.
+Batch 10 processed in 9.66 seconds.
+Data Loading: query processing time per record in secs: 0.02555931812871701.
+Batch 11 processed in 5.68 seconds.
+Data Loading: query processing time per record in secs: 0.01357773445439681.
+Batch 12 processed in 9.89 seconds.
+Data Loading: query processing time per record in secs: 0.02908386272542617.
+Batch 13 processed in 6.09 seconds.
+Data Loading: query processing time per record in secs: 0.012487844365542053.
+Batch 14 processed in 22.96 seconds.
+Data Loading: query processing time per record in secs: 0.08863835905509566.
+Batch 15 processed in 50.53 seconds.
+Data Loading: query processing time per record in secs: 0.03886757630568284.
+Batch 16 processed in 106.83 seconds.
+Data Loading: query processing time per record in secs: 0.03102851599550095.
+Batch 17 processed in 452.72 seconds.
+Data Loading: query processing time per record in secs: 0.045933556658300484.
+Time Now:2024-09-06 09:25:26 ,Timestamp: 2024-09-06T09:25:26.671872, Data: {'joint_1_sensor': 'sensor_name', '{"timestamp": "2024-09-06T09:25:26Z", "type": "info", "message": "Info log message"}': 'log', 'timestamp': '2024-09-06T09:25:26.671872', '2024-09-06 09:25:26': 'timestamp', '{"y": 0.0, "z": 0.0, "x": 1.0}': 'position', '0.0': 'joint_angle', '{"force": {"y": 0.0, "z": 0.0, "x": 10.0}, "torque": {"y": 0.0, "z": 0.0, "x": 0.0}}': 'force_torque', '0.1': 'velocity', '2.5': 'current', '{"air_quality": "Good", "humidity": 50.0, "temperature": 25.0}': 'environment', 'joint_1': 'joint_name'}
+Data Extraction: 2.74.
+Data Transformation: 1.59.
+Batch 0 processed in 21.54 seconds.
+Batch 18 processed in 451.50 seconds.
+Data Loading: query processing time per record in secs: 0.011359020469293539.
+Data Extraction: 2.51.
+Data Transformation: 1.84.
+Batch 0 processed in 18.70 seconds.
+Batch 1 processed in 22.93 seconds.
+Data Loading: query processing time per record in secs: 0.0060095700202997876.
+Batch 2 processed in 27.45 seconds.
+Data Loading: query processing time per record in secs: 0.0044509221344959105.
+Batch 3 processed in 32.90 seconds.
+Data Loading: query processing time per record in secs: 0.003951521041199442.
+Batch 4 processed in 37.99 seconds.
+Data Loading: query processing time per record in secs: 0.003608081424346121.
+Batch 5 processed in 45.05 seconds.
+Data Loading: query processing time per record in secs: 0.003725969466027196.
+Batch 6 processed in 47.72 seconds.
+Data Loading: query processing time per record in secs: 0.0032966135779478566.
+Data Extraction: 1.40.
+Data Transformation: 1.01.

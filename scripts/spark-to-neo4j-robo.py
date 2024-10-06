@@ -2,8 +2,7 @@ from pyspark.sql.session import SparkSession
 from pyspark.sql.functions import col, from_json, udf
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
 from pyspark.sql import functions as F
-import logging
-from neo4j import GraphDatabase
+import logging,time
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -50,6 +49,7 @@ def decode_and_parse(value):
 # Register the function as a UDF (User Defined Function)
 decode_and_parse_udf = udf(decode_and_parse, StringType())
 
+kafka_read_start = time.time()
 # Read from Kafka as a streaming DataFrame
 df1 = spark \
     .readStream \
@@ -57,7 +57,13 @@ df1 = spark \
     .option("kafka.bootstrap.servers", "172.25.0.12:9092,172.25.0.13:9092") \
     .option("subscribe", TOPIC_NAME) \
     .load()
+kafka_read_end = time.time()
+kafka_read_time = kafka_read_end - kafka_read_start
+logger.info("Kafka stream reading time: {0:.2f} seconds.".format(kafka_read_time))
+with open("/app/data/timerecorder.txt", "a") as f:
+    f.write("Data Extraction: {0:.2f}.\n".format(kafka_read_time))
 
+start_time = time.time()
 # Apply the UDF to decode and parse the value column
 df_parsed = df1.withColumn("parsed_value", decode_and_parse_udf(col("value")))
 
@@ -130,14 +136,6 @@ df_parsed = df_parsed.withColumn("environment_air_quality", F.col("environment.a
 
 # Drop the original environment column
 df_parsed = df_parsed.drop("environment")
-
-
-write_query1 = '''MATCH (log:Log {name: 'Log'}) MERGE (wl:LogNotification {name: event.log_type,timestamp: datetime(event.timestamp)}) ON CREATE SET wl.hasMessage = event.log_message MERGE (log)-[:HAS_RECORD {timestamp: datetime(event.timestamp)}]->(wl)'''
-
-write_query2 = '''MERGE (s:Sensor {timestamp: datetime(event.timestamp)}) ON CREATE SET s.hasAcceleration = event.joint_angle, s.hasCurrent = event.current, s.hasForceX = event.force_x, s.hasForceY = event.force_y, s.hasForceZ = event.force_z, s.hasPositionX = event.position_x, s.hasPositionY = event.position_y, s.hasPositionZ = event.position_z, s.hasTorqueX = event.torque_x, s.hasTorqueY = event.torque_y, s.hasTorqueZ = event.torque_z, s.hasVelocity = event.velocity MERGE (j:Joint {name: event.joint_name}) MERGE (j)-[r:HAS_SENSOR]->(s) ON CREATE SET r.timestamp = datetime(event.timestamp)'''
-
-write_query3 = '''MERGE (environment:Environment {name: 'Environment'}) MERGE (environmentSensor:EnvironmentSensor {hasTimestamp: datetime(event.timestamp)}) ON CREATE SET environmentSensor.hasAirQuality = event.environment_air_quality, environmentSensor.hasHumidity = event.environment_humidity, environmentSensor.hasTemperature = event.environment_temperature MERGE (environment)-[:HAS_READING {timestamp: datetime(event.timestamp)}]->(environmentSensor)'''
-
 # Flatten log column
 df_parsed = df_parsed.withColumn("log_timestamp", F.col("log.timestamp")) \
                      .withColumn("log_type", F.col("log.type")) \
@@ -154,11 +152,32 @@ df_parsed = df_parsed.withColumn("timestamp", col("timestamp").cast(TimestampTyp
 
 # Repartition the DataFrame based on 'joint_name'
 df_partitioned = df_parsed.repartition("joint_name")
+# Record the end time of the processing
+end_time = time.time()
+
+# Calculate total time taken for the transformations
+processing_time = end_time - start_time
+
+# Log or print the processing time
+logger.info("Data transformation processing time: {0:.2f} seconds.\n".format(processing_time))
+
+with open("/app/data/timerecorder.txt", "a") as f:
+    f.write("Data Transformation: {0:.2f}.\n".format(processing_time))
+
+write_query1 = '''MATCH (log:Log {name: 'Log'}) MERGE (wl:LogNotification {name: event.log_type,timestamp: datetime(event.timestamp)}) ON CREATE SET wl.hasMessage = event.log_message MERGE (log)-[:HAS_RECORD {timestamp: datetime(event.timestamp)}]->(wl)'''
+
+write_query2 = '''MERGE (s:Sensor {timestamp: datetime(event.timestamp)}) ON CREATE SET s.hasAcceleration = event.joint_angle, s.hasCurrent = event.current, s.hasForceX = event.force_x, s.hasForceY = event.force_y, s.hasForceZ = event.force_z, s.hasPositionX = event.position_x, s.hasPositionY = event.position_y, s.hasPositionZ = event.position_z, s.hasTorqueX = event.torque_x, s.hasTorqueY = event.torque_y, s.hasTorqueZ = event.torque_z, s.hasVelocity = event.velocity MERGE (j:Joint {name: event.joint_name}) MERGE (j)-[r:HAS_SENSOR]->(s) ON CREATE SET r.timestamp = datetime(event.timestamp)'''
+
+write_query3 = '''MERGE (environment:Environment {name: 'Environment'}) MERGE (environmentSensor:EnvironmentSensor {hasTimestamp: datetime(event.timestamp)}) ON CREATE SET environmentSensor.hasAirQuality = event.environment_air_quality, environmentSensor.hasHumidity = event.environment_humidity, environmentSensor.hasTemperature = event.environment_temperature MERGE (environment)-[:HAS_READING {timestamp: datetime(event.timestamp)}]->(environmentSensor)'''
+
+
 
 def process_batch(batch_df, batch_id):
+    # Start timing
+    start_time = time.time()
+    
     # Count entries in the batch
     count = batch_df.count()
-    logger.info("Batch {0} has {1} entries.".format(batch_id, count))
     
     # Filter out duplicates based on timestamp
     deduplicated_df = batch_df.dropDuplicates(["timestamp"])
@@ -178,7 +197,16 @@ def process_batch(batch_df, batch_id):
     except Exception as e:
         logger.error("Error writing to Neo4j: {}".format(e))
     finally:
-        logger.info("Batch {0} processing completed.".format(batch_id))
+        # Calculate and log the processing time
+        end_time = time.time()
+        processing_time = end_time - start_time
+        logger.info("Batch {0} processing completed in {1:.2f} seconds with {2} records.".format(batch_id, processing_time, count))
+        
+        # Optionally, log the processing time to a file
+        with open("/app/data/timerecorder.txt", "a") as f:
+            f.write("Batch {0} processed in {1:.2f} seconds.\n".format(batch_id, processing_time))
+            if count>0:
+                f.write("Data Loading: query processing time per record in secs: {0}.\n".format(processing_time/count))
 
 # Write the parsed data to HDFS
 hdfs_query = df_parsed.writeStream \
