@@ -26,8 +26,8 @@ while elapsed_time < datetime.timedelta(minutes=20):
     with open('../data/robot_sensor_data_validated.csv', 'r') as file:
         reader = csv.DictReader(file)
         for row in reader:
-            key = row['joint_name'].encode('utf-8')  
-            producer.send(TOPIC_NAME, key=key, value=row)
+            #key = row['joint_name'].encode('utf-8')  
+            producer.send(TOPIC_NAME, value=row)
             producer.flush()
 
         #time.sleep(0)  # Waits for 2 seconds to read new data

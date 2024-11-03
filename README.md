@@ -138,8 +138,8 @@ Start the Airflow scheduler: In a new terminal window:
 
 ```bash
 docker-compose exec spark bash
-source env/bin/activate
 cd /app
+source env/bin/activate
 airflow scheduler
 ```
 Access the Airflow UI: Open your browser and go to http://localhost:8082 to access the Airflow UI.
