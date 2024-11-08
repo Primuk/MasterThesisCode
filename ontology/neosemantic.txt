@@ -9,3 +9,4 @@ WHERE c:`owl__Class` AND sc:`owl__Class`
 RETURN c AS Class, sc AS Subclass
 LIMIT 100
 
+CALL n10s.rdf.import.fetch("file:///.../ontology/sensor1_KB.ttl", "Turtle");
